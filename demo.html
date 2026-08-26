@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Supabase PoC — Weekly Market Calendar</title>
+<style>
+  body { font-family: 'Noto Sans Thai', sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #0c244a; }
+  h1 { font-size: 20px; }
+  .card { border: 1px solid #d4d9e0; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+  .card h3 { margin: 0 0 6px; font-size: 16px; }
+  .card .meta { color: #667; font-size: 13px; }
+  #status { color: #667; font-size: 13px; }
+</style>
+</head>
+<body>
+  <h1>Weekly Market Calendar — ดึงตรงจาก Supabase</h1>
+  <p id="status">กำลังโหลด...</p>
+  <div id="output"></div>
+
+  <script>
+    // เทียบเท่าโค้ดใน home.html เดิมที่ยิงตรงเข้า HubDB public API:
+    //   fetch('https://api.hubapi.com/cms/v3/hubdb/tables/' + t.id + '/rows?portalId=' + PORTAL_ID + ...)
+    // ตรงนี้คือ pattern เดียวกัน แต่ชี้ไปที่ Supabase REST endpoint แทน
+    var SUPABASE_URL = 'https://kqgdvpqygepvaifzrxki.supabase.co';
+    var SUPABASE_ANON_KEY = 'sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp'; // publishable key ใช้ฝั่ง client ได้ปลอดภัย (อ่านอย่างเดียว, บังคับด้วย RLS policy)
+
+    fetch(SUPABASE_URL + '/rest/v1/weekly_market_calendar?select=week_slug,main_title,page_subtitle,week_start_date,week_end_date&order=week_slug.desc', {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+      }
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (rows) {
+        document.getElementById('status').textContent = 'โหลดสำเร็จ ' + rows.length + ' แถว จาก Supabase';
+        var html = rows.map(function (row) {
+          return '<div class="card">' +
+            '<h3>' + row.main_title + '</h3>' +
+            '<div class="meta">' + row.page_subtitle + '</div>' +
+            '<div class="meta">สัปดาห์: ' + row.week_start_date + ' – ' + row.week_end_date + '</div>' +
+            '</div>';
+        }).join('');
+        document.getElementById('output').innerHTML = html;
+      })
+      .catch(function (err) {
+        document.getElementById('status').textContent = 'โหลดไม่สำเร็จ: ' + err;
+      });
+  </script>
+</body>
+</html>

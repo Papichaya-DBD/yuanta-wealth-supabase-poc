@@ -1,0 +1,45 @@
+# Yuanta Wealth — HubDB → Supabase Migration PoC
+
+Sandbox proof-of-concept, completely separate from the live `yuanta-wealth-website` repo
+and from the production HubSpot/HubDB data. Goal: test whether Supabase (managed Postgres)
+can replace HubDB as the data layer, to inform a decision on moving the whole site off HubSpot.
+
+## What's here
+
+- `sql/create_weekly_market_calendar.sql` — schema mirroring HubDB's weekly market-calendar
+  table column-for-column.
+- `sql/insert_weekly_market_calendar.sql` — the 7 real rows imported from the CSV export
+  (`marketing_wealth_weekly_marketcalendar-2026-08-26.csv`), escaped as INSERT statements.
+- `sql/enable_rls.sql` — Row Level Security + a public-read-only policy, mirroring the
+  correct production pattern (client reads with the anon/publishable key, only a
+  server-side script writes with the service_role key).
+- `scripts/mcp_call.mjs`, `scripts/mcp_call_file.mjs` — drive the Supabase MCP server
+  directly over stdio (JSON-RPC) to run migrations/queries from the command line, without
+  depending on a chat client's MCP tool integration.
+- `demo.html` — open directly in a browser. Fetches live from the Supabase REST API
+  and renders the rows. This is the client-side equivalent of the `fetch('https://api.hubapi.com/cms/v3/hubdb/tables/...')`
+  call already used in `home.html` on the real site — same pattern, pointed at Supabase.
+
+## Project details
+
+- Supabase project ref: `kqgdvpqygepvaifzrxki`
+- Project URL: `https://kqgdvpqygepvaifzrxki.supabase.co`
+- Region: Singapore (ap-southeast-1)
+- The publishable/anon key is safe to embed client-side (same trust level as HubSpot's
+  portal ID in the current site) — RLS restricts it to read-only.
+- The Personal Access Token (`sbp_...`) used to manage this project via MCP is **not**
+  stored in this folder. It only lives in the local Claude Code MCP config
+  (`claude mcp get supabase`) and should never be committed anywhere.
+
+## Re-running a script
+
+```bash
+SUPABASE_ACCESS_TOKEN=sbp_xxx node scripts/mcp_call.mjs list_tables '{"schemas":["public"],"verbose":false}'
+SUPABASE_ACCESS_TOKEN=sbp_xxx node scripts/mcp_call_file.mjs execute_sql query sql/insert_weekly_market_calendar.sql
+```
+
+## Status
+
+Only 1 of the 14 HubDB tables used by the real site (`weekly_market_calendar`) has been
+mirrored so far, as a feasibility test. See project memory `project_hubspot_migration_poc`
+for the full table inventory and next steps.
