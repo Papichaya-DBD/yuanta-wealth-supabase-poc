@@ -19,6 +19,13 @@ can replace HubDB as the data layer, to inform a decision on moving the whole si
 - `demo.html` — open directly in a browser. Fetches live from the Supabase REST API
   and renders the rows. This is the client-side equivalent of the `fetch('https://api.hubapi.com/cms/v3/hubdb/tables/...')`
   call already used in `home.html` on the real site — same pattern, pointed at Supabase.
+- `single-weekly-market-calendar.html` — a byte-for-byte design copy of the real
+  `yuanta-wealth-theme/templates/single-weekly-market-calendar.html`. Every CSS rule and
+  HTML section is unchanged; only the data-binding points that can't run outside HubSpot's
+  HubL renderer were adapted (see the comment block at the top of the file for the exact
+  list). Verified in-browser to be visually indistinguishable from the live production page,
+  with content sourced from Supabase instead of HubDB. Open with `?week=2026-04-20` (or any
+  imported week_slug) in the query string to view a specific week; defaults to the newest.
 
 ## Project details
 
