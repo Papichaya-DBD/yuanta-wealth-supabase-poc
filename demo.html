@@ -2,45 +2,163 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Supabase PoC — Weekly Market Calendar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <style>
-  body { font-family: 'Noto Sans Thai', sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #0c244a; }
-  h1 { font-size: 20px; }
-  .card { border: 1px solid #d4d9e0; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
-  .card h3 { margin: 0 0 6px; font-size: 16px; }
-  .card .meta { color: #667; font-size: 13px; }
-  #status { color: #667; font-size: 13px; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; font-family: 'Noto Sans Thai', sans-serif; }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+  /* ── Demo banner (not part of the real theme) ── */
+  .poc-banner { background: #0c244a; color: #fff; padding: 10px 20px; font-size: 13px; text-align: center; }
+  .poc-banner b { color: #ffd28a; }
+  .poc-picker { display: flex; align-items: center; gap: 10px; justify-content: center; padding: 16px 20px; background: #f9f7f4; font-size: 13px; color: #3d506e; flex-wrap: wrap; }
+  .poc-picker select { font-family: inherit; font-size: 13px; padding: 6px 10px; border: 1px solid #d4d9e0; }
+  #status { text-align: center; font-size: 13px; color: #8f9aac; padding: 6px 0; }
+
+  /* ── Copied from single-weekly-market-calendar.html (production theme) ── */
+  .insight-page { background: #fff; }
+  .insight-breadcrumb { padding: 30px 0; background: #fff; }
+  .insight-breadcrumb ol { margin: 0; padding: 0; list-style: none; display: flex; align-items: center; gap: 6px; font-size: 13px; color: #8f9aac; }
+  .insight-breadcrumb li a { color: #8f9aac; text-decoration: none; }
+  .insight-breadcrumb li.active { color: #a2603c; }
+  .insight-breadcrumb li.sep { color: #ccc; }
+  .article-header { padding: 0 0 32px; text-align: left; }
+  .article-category-tag { display: inline-block; font-family: 'Cormorant Garamond','Noto Sans Thai',Georgia,serif; font-size: 14px; font-weight: 500; padding: 4px 16px; background: #b4bbc77a; color: #0c244a; border: 1px solid rgba(0,0,0,.1); margin-bottom: 20px; letter-spacing: .03em; }
+  .article-title { font-size: 35px; font-weight: 700; color: #0c244a; line-height: 1.3; margin-bottom: 16px; padding: 0; }
+  .article-subtitle { font-size: 24px; font-weight: 700; color: #3D506E; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+  @media (max-width: 767px) { .article-title { font-size: 24px; } .article-subtitle { font-size: 18px; } }
+  .article-date { font-size: 14px; color: #3D506E; font-weight: 600; }
+  .article-body { padding: 0 0 60px; }
+  .ai-summary-box { background: url('https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/bgaisummary.jpg') center/cover no-repeat; border: 1px solid #3b537829; padding: 28px 32px; margin-bottom: 40px; }
+  .ai-summary-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .ai-summary-icon img { width: 32px; height: 32px; object-fit: contain; }
+  .ai-summary-label { font-family: 'Cormorant Garamond', sans-serif; font-size: 32px; font-weight: 700; color: #0c244a; display: block; margin-bottom: 2px; }
+  @media (max-width: 767px) { .ai-summary-label { font-size: 24px; } }
+  .ai-summary-sublabel { font-size: 16px; color: #8f9aac; margin: 0; }
+  .ai-summary-text { font-size: 16px; color: #0C244A; line-height: 1.75; }
+  .ai-summary-text p { margin-bottom: 8px; }
+  .article-content { font-size: 16px; color: #1a2e44; line-height: 1.75; }
+  .article-content h3 { font-size: 18px; font-weight: 700; color: #0c244a; margin: 32px 0 16px; padding-bottom: 12px; border-bottom: 2px solid #0c244a; display: inline-block; }
+  .article-content p { margin-bottom: 14px; }
+  .article-content img { width: 100%; border-radius: 4px; margin: 16px 0; display: block; }
+  .article-content table { border-collapse: collapse; }
+  .article-cta-row { display: grid; grid-template-columns: 3fr 1fr; gap: 16px; margin-bottom: 32px; margin-top: 48px; }
+  .article-cta-left { border: 1.5px solid #0000001A; background: url('https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/bgoverall.jpg') center/cover no-repeat; padding: 44px 40px; }
+  .article-cta-right { border: 1.5px solid #0000001A; background: url('https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/bg-seeall.jpg') center/cover no-repeat; padding: 27px 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+  .article-cta-title { font-size: 32px; font-weight: 700; color: #0c244a; margin-bottom: 10px; line-height: 1.3; }
+  .article-cta-sub { font-size: 16px; color: #3d506e; margin-bottom: 24px; line-height: 1.6; }
+  .article-cta-btn { font-size: 14px; font-weight: 600; background: #0c244a; color: #fff; border: none; padding: 11px 22px; cursor: pointer; white-space: nowrap; text-decoration: none; display: inline-block; }
+  .article-cta-right-title { font-size: 22px; font-weight: 700; color: #0c244a; margin-bottom: 24px; line-height: 1.4; text-align: center; }
+  .article-cta-outline-btn { font-size: 14px; font-weight: 600; background: #fff; color: #0c244a; border: 1.5px solid #0c244a; padding: 10px 22px; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+  @media (max-width: 767px) { .article-cta-row { grid-template-columns: 1fr; } .article-cta-left, .article-cta-right { padding: 24px 20px; } }
 </style>
 </head>
 <body>
-  <h1>Weekly Market Calendar — ดึงตรงจาก Supabase</h1>
-  <p id="status">กำลังโหลด...</p>
-  <div id="output"></div>
+
+  <div class="poc-banner">
+    🧪 PoC เปรียบเทียบ — หน้าตาก็อปจาก <code>single-weekly-market-calendar.html</code> ของจริง แต่เนื้อหาทั้งหมดดึงสดจาก <b>Supabase</b> แทน HubDB
+  </div>
+
+  <div class="poc-picker">
+    เลือกสัปดาห์ (ข้อมูลจริงที่ import มาจาก HubDB CSV):
+    <select id="weekPicker"></select>
+  </div>
+  <p id="status">กำลังโหลดรายการสัปดาห์...</p>
+
+  <div class="insight-page" id="page" style="display:none;">
+    <div class="insight-breadcrumb">
+      <div class="container">
+        <ol>
+          <li><a href="#">Home</a></li>
+          <li class="sep">/</li>
+          <li><a href="#">Insights</a></li>
+          <li class="sep">/</li>
+          <li class="active">Market calendar</li>
+        </ol>
+      </div>
+    </div>
+
+    <section class="article-header">
+      <div class="container">
+        <span class="article-category-tag">Market calendar</span>
+        <h1 class="article-title" id="f-title"></h1>
+        <p class="article-subtitle" id="f-subtitle"></p>
+        <p class="article-date" id="f-date"></p>
+      </div>
+    </section>
+
+    <section class="article-body">
+      <div class="container">
+        <div class="ai-summary-box">
+          <div class="ai-summary-header">
+            <div class="ai-summary-icon">
+              <img src="https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/ai-icon.png" alt="AI" />
+            </div>
+            <div>
+              <span class="ai-summary-label">AI Summary</span>
+              <p class="ai-summary-sublabel">บทสรุปจาก AI อ้างอิงโดยบทวิเคราะห์</p>
+            </div>
+          </div>
+          <div class="ai-summary-text" id="f-ai-summary"></div>
+        </div>
+
+        <div class="article-content" id="f-body"></div>
+
+        <div class="article-cta-row">
+          <div class="article-cta-left">
+            <p class="article-cta-title">ต้องการดูภาพรวมทั้งสัปดาห์?</p>
+            <p class="article-cta-sub">เนื้อหานี้เป็นส่วนหนึ่งของบทวิเคราะห์ฉบับเต็มที่ครอบคลุมเนื้อหาทุก asset class</p>
+            <a class="article-cta-btn" href="#">ดูมุมมองเพิ่มเติม</a>
+          </div>
+          <div class="article-cta-right">
+            <p class="article-cta-right-title">ดูมุมมอง<br>บทวิเคราะห์อื่นในสัปดาห์นี้</p>
+            <button class="article-cta-outline-btn">บทวิเคราะห์ประจำสัปดาห์ &gt;</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <script>
-    // เทียบเท่าโค้ดใน home.html เดิมที่ยิงตรงเข้า HubDB public API:
-    //   fetch('https://api.hubapi.com/cms/v3/hubdb/tables/' + t.id + '/rows?portalId=' + PORTAL_ID + ...)
-    // ตรงนี้คือ pattern เดียวกัน แต่ชี้ไปที่ Supabase REST endpoint แทน
     var SUPABASE_URL = 'https://kqgdvpqygepvaifzrxki.supabase.co';
-    var SUPABASE_ANON_KEY = 'sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp'; // publishable key ใช้ฝั่ง client ได้ปลอดภัย (อ่านอย่างเดียว, บังคับด้วย RLS policy)
+    var SUPABASE_ANON_KEY = 'sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp'; // publishable key, safe client-side, RLS = read-only
 
-    fetch(SUPABASE_URL + '/rest/v1/weekly_market_calendar?select=week_slug,main_title,page_subtitle,week_start_date,week_end_date&order=week_slug.desc', {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
-      }
-    })
-      .then(function (r) { return r.json(); })
+    function sb(path) {
+      return fetch(SUPABASE_URL + '/rest/v1/' + path, {
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY }
+      }).then(function (r) { return r.json(); });
+    }
+
+    function thaiDateBE(dateStr) {
+      var months = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+      var d = new Date(dateStr + 'T00:00:00Z');
+      return d.getUTCDate() + ' ' + months[d.getUTCMonth()] + ' ' + (d.getUTCFullYear() + 543);
+    }
+
+    function renderRow(row) {
+      document.getElementById('f-title').textContent = row.main_title;
+      document.getElementById('f-subtitle').textContent = row.page_subtitle;
+      document.getElementById('f-date').textContent = thaiDateBE(row.page_date);
+      document.getElementById('f-ai-summary').innerHTML = row.ai_summary;
+      document.getElementById('f-body').innerHTML = row.body;
+      document.getElementById('page').style.display = '';
+      document.getElementById('status').textContent = '';
+    }
+
+    sb('weekly_market_calendar?select=hs_id,week_slug,main_title,page_subtitle,page_date,ai_summary,body&order=week_slug.desc')
       .then(function (rows) {
-        document.getElementById('status').textContent = 'โหลดสำเร็จ ' + rows.length + ' แถว จาก Supabase';
-        var html = rows.map(function (row) {
-          return '<div class="card">' +
-            '<h3>' + row.main_title + '</h3>' +
-            '<div class="meta">' + row.page_subtitle + '</div>' +
-            '<div class="meta">สัปดาห์: ' + row.week_start_date + ' – ' + row.week_end_date + '</div>' +
-            '</div>';
+        var picker = document.getElementById('weekPicker');
+        picker.innerHTML = rows.map(function (r) {
+          return '<option value="' + r.hs_id + '">' + r.week_slug + ' — ' + r.main_title.slice(0, 40) + '…</option>';
         }).join('');
-        document.getElementById('output').innerHTML = html;
+        var byId = {};
+        rows.forEach(function (r) { byId[r.hs_id] = r; });
+        picker.addEventListener('change', function () { renderRow(byId[picker.value]); });
+        renderRow(rows[0]);
       })
       .catch(function (err) {
         document.getElementById('status').textContent = 'โหลดไม่สำเร็จ: ' + err;
