@@ -65,4 +65,4 @@ setTimeout(() => {
     child.kill();
     process.exit(1);
   }
-}, 30000);
+}, 150000);
