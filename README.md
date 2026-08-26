@@ -33,6 +33,16 @@ can replace HubDB as the data layer, to inform a decision on moving the whole si
   list). Verified in-browser to be visually indistinguishable from the live production page,
   with content sourced from Supabase instead of HubDB. Open with `?week=2026-04-20` (or any
   imported week_slug) in the query string to view a specific week; defaults to the newest.
+- `single-buy-list.html` — same approach applied to `yuanta-wealth-theme/templates/single-buy-list.html`.
+  This page already did almost all its rendering client-side against HubDB's public API
+  (title, CIO box, donut chart, portfolio cards, fund drawer, related swiper), so most of the
+  work was redirecting those `fetch()` calls at Supabase instead — see `sbFetch()` and the
+  file's top comment. Links the 3 real published theme stylesheets (bootstrap, swiper,
+  main.css) straight from the live CDN for exact grid/typography fidelity. Verified in-browser:
+  tab switching across all 3 portfolio models, the fund drawer (against the newly-added
+  `fund_detail` table), and the monthly-analysis modal (converted from a server-rendered HubL
+  loop into the same fetch/render pattern used elsewhere in the file). Open with
+  `?week=2026-06-15` (or any imported week_slug) to view a specific week.
 
 ## Project details
 
@@ -54,9 +64,13 @@ SUPABASE_ACCESS_TOKEN=sbp_xxx node scripts/mcp_call_file.mjs execute_sql query s
 
 ## Status
 
-All 16 HubDB tables used by the real site are now mirrored in Supabase — schema and real
+All 17 HubDB tables used by the real site are now mirrored in Supabase — schema and real
 data, RLS enabled with a public-read-only policy on every one (verified with
-`get_advisors`: zero security lints). Not yet done: pointing any actual page's data-fetching
-at Supabase besides the `single-weekly-market-calendar.html` design-parity demo, and the
-before/after comparison (cost, control, effort) for the executive report. See project
-memory `project_hubspot_migration_poc` for the full table inventory and history.
+`get_advisors`: zero security lints). `fund_detail` (17th table) was found while building
+the buy-list demo — it's only referenced from client-side JS, not from any
+`hubdb_table_rows()` call, so the original grep-based survey missed it.
+
+Two full design-parity page demos done (`single-weekly-market-calendar.html`,
+`single-buy-list.html`). Not yet done: the remaining page templates, and the before/after
+comparison (cost, control, effort) for the executive report. See project memory
+`project_hubspot_migration_poc` for the full table inventory and history.
