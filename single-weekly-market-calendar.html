@@ -37,6 +37,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<!-- [POC] added for global header/footer parity — kept before the page's own <style> block below so this page's own rules still win on tied specificity, same cascade order as production -->
+<link rel="stylesheet" href="https://wealth.yuanta.co.th/hubfs/hub_generated/template_assets/1/361176548062/1782363161161/template_bootstrap.min.css">
+<link rel="stylesheet" href="https://wealth.yuanta.co.th/hubfs/hub_generated/template_assets/1/345935938239/1786331115361/template_main.min.css">
 <style>
   body { margin: 0; font-family: 'Noto Sans Thai', sans-serif; }
   .insight-page { margin-top: 0; background: #fff; }
@@ -199,16 +202,51 @@
   .week-modal-title { font-family: 'Noto Sans Thai', sans-serif; font-size: 16px; font-weight: 700; color: #0c244a; margin: 0; }
   .week-modal-close { width: 32px; height: 32px; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #3d506e; border-radius: 50%; transition: background .15s; }
   .week-modal-close:hover { background: #f0f0f0; }
-
-  /* [POC] container helpers only — not present in the real template, needed because a static
-     page has no server-side "row not found" branch to swap to */
-  .container { max-width: 900px; margin: 0 auto; padding: 0 16px; }
-  .row.g-3 { display: flex; flex-wrap: wrap; margin: -6px; }
-  .row.g-3 > [class*="col-"] { padding: 6px; }
-  .col-12 { width: 100%; } .col-6 { width: 50%; } .col-sm-4 { width: 33.33%; } .col-lg-3 { width: 25%; }
 </style>
 </head>
 <body>
+
+<!-- [POC] Global header/nav — copied from templates/partials/header.html, get_asset_url resolved to real CDN, HubL {% if request.path %} active-state replaced with a small JS check -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <div class="navbar-left">
+      <a href="https://www.yuanta.co.th/" target="_blank" class="navbar-main-site-btn d-none d-lg-inline-flex">
+        <img src="https://landing.yuanta.co.th/hubfs/AI-Generated%20Media/wh.png" width="16" height="16" alt="" style="object-fit:contain;flex-shrink:0;" />
+        เว็บไซต์หลัก
+      </a>
+      <a href="https://wealth.yuanta.co.th/" class="navbar-logo">
+        <img src="https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/Logo%20wealth%20.svg" alt="Yuanta Wealth" />
+      </a>
+    </div>
+    <div class="d-flex d-lg-none align-items-center" style="gap: 20px;">
+      <a href="#" class="btn-book-meeting d-none d-sm-inline-flex" onclick="openMeetingModal(); return false;">Book a meeting</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <div class="navbar-right">
+        <nav class="navbar-menu" id="navbarMenu">
+          <a href="/" data-nav-match="/">Home</a>
+          <a href="/wealth-whyus" data-nav-match="/wealth-whyus">Why us</a>
+          <a href="/wealth-privilegesandevents" data-nav-match="/wealth-privileges">Privileges &amp; events</a>
+          <a href="/wealth-insights" data-nav-match="/wealth-insights">Insights</a>
+          <a href="/wealth-contactus" data-nav-match="/wealth-contact">Contact us</a>
+        </nav>
+        <a href="#" class="btn-book-meeting" onclick="openMeetingModal(); return false;">Book a meeting</a>
+      </div>
+    </div>
+  </div>
+</nav>
+<script>
+  (function () {
+    var path = window.location.pathname;
+    document.querySelectorAll('#navbarMenu a[data-nav-match]').forEach(function (a) {
+      var m = a.getAttribute('data-nav-match');
+      if (m === '/' ? path === '/' : path.indexOf(m) !== -1) a.classList.add('active');
+    });
+  })();
+</script>
 
 <div class="insight-page" id="mainContent">
 
@@ -228,17 +266,20 @@
   <!-- ARTICLE HEADER -->
   <section class="article-header">
     <div class="container">
-      <span class="article-category-tag">Market calendar</span>
-      <!-- [POC] {{ row.main_title }} / {{ row.page_subtitle }} / {{ row.page_date }} -> filled by JS from Supabase -->
-      <h1 class="article-title" id="f-title"></h1>
-      <p class="article-subtitle" id="f-subtitle"></p>
-      <p class="article-date" id="f-date"></p>
+      <div class="col-12 col-lg-9 mx-auto">
+        <span class="article-category-tag">Market calendar</span>
+        <!-- [POC] {{ row.main_title }} / {{ row.page_subtitle }} / {{ row.page_date }} -> filled by JS from Supabase -->
+        <h1 class="article-title" id="f-title"></h1>
+        <p class="article-subtitle" id="f-subtitle"></p>
+        <p class="article-date" id="f-date"></p>
+      </div>
     </div>
   </section>
 
   <!-- ARTICLE BODY -->
   <section class="article-body">
     <div class="container">
+      <div class="col-12 col-lg-9 mx-auto">
 
       <!-- AI Summary -->
       <div class="ai-summary-box">
@@ -327,6 +368,7 @@
       <!-- Related articles (other categories, same week) -->
       <div class="related-section" id="relatedSection" style="display:none;">
         <div class="container">
+        <div class="col-12 col-lg-9 mx-auto">
         <div class="related-week-header-row">
           <span class="related-week-chip">Weekly</span>
           <span class="related-week-label" id="f-subtitle-2"></span>
@@ -339,8 +381,10 @@
           <div class="swiper-button-next weekly-next"></div>
         </div>
         </div>
+        </div>
       </div>
 
+      </div>
     </div>
   </section>
 
@@ -390,6 +434,92 @@
     </div>
   </div>
 </section>
+
+<!-- [POC] Global footer — copied from templates/partials/footer.html, get_asset_url resolved to real CDN -->
+<footer class="footer">
+  <div class="container">
+    <div class="row gy-4 align-items-start">
+
+      <div class="col-12 col-lg-3">
+        <div class="footer-brand">
+          <img class="footer-logo" src="https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/Logo%20wealth%20.svg" alt="Yuanta Wealth" />
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="footer-nav-wrap">
+          <ul class="footer-nav-links">
+            <li><a href="/why-us">Why us</a></li>
+            <li><a href="/wealth-insights">Insights</a></li>
+          </ul>
+          <ul class="footer-nav-links">
+            <li><a href="/privileges-events">Privileges &amp; Events</a></li>
+            <li><a href="/contact-us">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-3">
+        <div class="footer-contact-col">
+          <div class="footer-contact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+            <a href="tel:020098000">0-2009-8000</a>
+          </div>
+          <div class="footer-contact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+            <a href="mailto:online@yuanta.co.th">online@yuanta.co.th</a>
+          </div>
+          <div class="footer-social">
+            <a href="https://www.facebook.com/yuantathai" target="_blank"><img src="https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/Facebook.png" alt="Facebook" /></a>
+            <a href="https://line.me/R/ti/p/@sxk4157s" target="_blank"><img src="https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/Line.png" alt="Line" /></a>
+            <a href="https://www.youtube.com/channel/UCqpfaQS5MRpI_As13qX3-hA" target="_blank"><img src="https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/Youtube.png" alt="YouTube" /></a>
+            <a href="https://www.instagram.com/yuantathai" target="_blank"><img src="https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/Instagram.png" alt="Instagram" /></a>
+            <a href="https://t.me/Yuantathai" target="_blank"><img src="https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/Telegram.png" alt="Telegram" /></a>
+            <a href="https://x.com/yuantathai" target="_blank"><img src="https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/X.png" alt="X" /></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-2">
+        <p class="footer-address-text">เลขที่ 127 อาคารเกษร ทาวเวอร์ ชั้น 14-16 ถนนราชดำริ แขวงลุมพินี เขตปทุมวัน กรุงเทพมหานคร 10330</p>
+      </div>
+
+    </div>
+  </div>
+</footer>
+
+<!-- [POC] Setmore booking modal — copied from templates/layouts/base.html -->
+<div id="meeting-modal" class="meeting-modal-overlay" onclick="closeMeetingModal(event)">
+  <div class="meeting-modal-box">
+    <button class="meeting-modal-close" type="button" onclick="closeMeetingModal()">&#10005;</button>
+    <div class="meeting-loading" id="meeting-loading"><div class="meeting-loading-spinner"></div></div>
+    <iframe id="setmore-iframe" src="" style="width:100%;height:calc(90vh - 40px);border:none;border-radius:12px 12px 0 0;" allowfullscreen onload="document.getElementById('meeting-loading').style.display='none';"></iframe>
+  </div>
+</div>
+<script>
+  window.openMeetingModal = function() {
+    var modal = document.getElementById('meeting-modal');
+    var iframe = document.getElementById('setmore-iframe');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    if (!iframe.getAttribute('data-loaded')) {
+      iframe.src = 'https://yuantasecuritiesthailand.setmore.com';
+      iframe.setAttribute('data-loaded', 'true');
+    }
+  };
+  window.closeMeetingModal = function(e) {
+    if (!e || e.target === document.getElementById('meeting-modal')) {
+      document.getElementById('meeting-modal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  };
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') window.closeMeetingModal();
+  });
+</script>
+
+<script src="https://wealth.yuanta.co.th/hubfs/hub_generated/template_assets/1/361175349970/1782363161626/template_bootstrap.bundle.min.js"></script>
+<script src="https://wealth.yuanta.co.th/hubfs/hub_generated/template_assets/1/345935938263/1780979736919/template_main.min.js"></script>
 
 <script>
   // ── Unchanged from production ──────────────────────────────────────────
