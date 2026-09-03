@@ -1,46 +1,37 @@
 <!--
-  This is the PRODUCTION file yuanta-wealth-theme/templates/single-market-calendar.html — NOTE:
-  despite its filename lacking "weekly", THIS is the real template bound to the live
-  /wealth-single-weekly-market-calendar/ page (confirmed via HubSpot Design Manager's
-  "Template used on this page" panel; the similarly-named single-weekly-market-calendar.html
-  file in the theme repo is an unused decoy — same discovery pattern as single-hot-issue.html
-  and single-asset-performance.html vs their "weekly"-prefixed siblings). This PoC file is kept
-  at the "single-weekly-market-calendar.html" name to match the live URL path, but its content
-  is now the CORRECT source template (previously this file was built from the wrong decoy
-  template and was missing the monthly cross-link modal entirely — fixed 2026-09-03).
+  This is the PRODUCTION file yuanta-wealth-theme/templates/single-monthly-market-outlook.html,
+  adapted only where it cannot run standalone in a browser (plus the global header/footer and
+  Setmore modal). Changes made, marked "[POC]" in comments:
 
-  Changes from the real template, marked "[POC]" in comments:
-  1. `{{ row.xxx }}` interpolations -> elements with stable ids, filled by JS after a fetch.
-  2. `dynamic_page_hubdb_row` -> Supabase's `weekly_market_calendar` table (defaults to the
-     newest row when no `?week=` query string is given, instead of production's redirect-to-
-     insights behavior — no real router behind this static demo).
-  3. The weekly "related articles" (hot-issue/asset-performance/buy-list, same week) were
-     already client-fetched from HubDB's public API in production — untouched, still hits
-     HubDB directly (those 3 tables aren't migrated to Supabase yet, but their public API works).
-  4. The monthly cross-link modal's 6 tables (monthly_hotissue/assetperf/buylist/mktcalendar/
-     mktoutlook/assetoutlook) WERE a server-side-only HubL loop in production (no client fetch
-     existed) — now a Supabase fetch, since all 6 are migrated in this PoC.
-  5. Experts: production called `hubdb_table_rows(2238813912, ...)` server-side, which always
-     works regardless of that table's public-API setting. That table (`experts`) is in Supabase
-     now with a public-read policy, so this fetches it live instead of baking it in statically
-     (an earlier version of this page, before this table was in Supabase, baked 3 static rows —
-     switched to live fetch for consistency with every other page in this repo).
-  6. get_asset_url(...) calls -> resolved to their real published CDN URLs.
-  7. The newsletter form's real network submission is disabled, same as the other PoC pages.
+  1. `dynamic_page_hubdb_row` -> fetch from Supabase's `monthly_market_outlook` table instead
+     (defaults to the newest row when no `?week=` query string is given, same convention as
+     the other dynamic single-page templates in this repo, instead of production's redirect-
+     to-insights-on-missing-row behavior — there's no real router behind this static demo).
+  2. All 5 "related articles" HubDB tables (monthly_hot_issue, monthly_asset_performance,
+     monthly_asset_class_outlook, monthly_market_calendar, monthly_buy_list) ARE migrated to
+     Supabase in this PoC, so every related-article fetch is redirected there too.
+  3. The Experts section (`hubdb_table_rows(2238813912, ...)`) was a SERVER-SIDE HubL call in
+     production, which always works regardless of that table's public-API setting — the earlier
+     weekly-page demos in this repo found that table's public REST API disabled and baked the
+     3 experts in as static content instead. That table (`experts`) IS in Supabase now with a
+     public-read policy, so this page (and future ones) fetch it live from Supabase instead —
+     a small capability improvement over the original HubDB constraint.
+  4. get_asset_url(...) calls -> resolved to their real published CDN URLs.
+  5. The newsletter form's actual network submission is disabled, same as the other PoC pages.
 -->
 <!doctype html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Single Weekly Market Calendar — Supabase PoC</title>
+<title>Single Monthly Market Outlook — Supabase PoC</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://wealth.yuanta.co.th/hubfs/hub_generated/template_assets/1/361176548062/1782363161161/template_bootstrap.min.css">
+<link rel="stylesheet" href="https://wealth.yuanta.co.th/hubfs/hub_generated/template_assets/1/361176548051/1782363158692/template_swiper-bundle.min.css">
 <link rel="stylesheet" href="https://wealth.yuanta.co.th/hubfs/hub_generated/template_assets/1/345935938239/1786331115361/template_main.min.css">
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <style>
   .insight-page { margin-top: 90px; background: #fff; }
   .insight-breadcrumb { padding: 30px 0; background: #fff; }
@@ -50,7 +41,7 @@
   .insight-breadcrumb li.active { color: #a2603c; }
   .insight-breadcrumb li.sep { color: #ccc; }
   .article-header { padding: 0 0 32px; text-align: left; }
-  .article-category-tag { display: inline-block; font-family: 'Cormorant Garamond','Noto Sans Thai',Georgia,serif; font-size: 14px; font-weight: 500; padding: 4px 16px; background: #b4bbc77a; color: #0c244a; border: 1px solid rgba(0,0,0,.1); margin-bottom: 20px; letter-spacing: .03em; }
+  .article-category-tag { display: inline-block; font-family: 'Cormorant Garamond','Noto Sans Thai',Georgia,serif; font-size: 14px; font-weight: 500; padding: 4px 16px; background: #F0EFF5; color: #3d2260; border: 1px solid #D1CCDF; border: 1px solid rgba(61,34,96,.2); margin-bottom: 20px; letter-spacing: .03em; }
   .article-title { font-family: 'Noto Sans Thai', sans-serif; font-size: 35px; font-weight: 700; color: #0c244a; line-height: 1.3; margin-bottom: 16px; padding: 0; }
   .article-subtitle { font-family: 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 700; color: #3D506E; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,0.1); }
   @media (max-width: 991px) { .article-title { font-size: 28px; } }
@@ -80,41 +71,27 @@
   .ai-summary-text p:last-child { margin-bottom: 0; }
   .article-content { font-family: 'Noto Sans Thai', sans-serif; font-size: 16px; color: #1a2e44; line-height: 1.75; }
   .article-content h2 { font-family: 'Noto Sans Thai', sans-serif; font-size: 18px; font-weight: 700; color: #0c244a; margin: 32px 0 16px; padding-bottom: 12px; border-bottom: 2px solid #0c244a; display: inline-block; }
+  .article-content h3 { font-family: 'Noto Sans Thai', sans-serif; font-size: 20px; font-weight: 700; color: #0c244a; margin: 24px 0 12px; }
   .article-content p { margin-bottom: 14px; }
-  @media (max-width: 767px) { .article-content p { font-size: 16px; } }
+  @media (max-width: 767px) { .article-content h3 { font-size: 18px; } .article-content p { font-size: 16px; } }
+  .article-content table { width: 100% !important; border-collapse: collapse; margin: 20px 0; font-family: 'Noto Sans Thai', sans-serif; font-size: 13px; }
+  .article-content table th { background: #0c244a; color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; word-break: break-word; overflow-wrap: anywhere; }
+  .article-content table td { padding: 10px 14px; border-bottom: 1px solid #eaeaea; color: #1a2e44; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; }
+  .article-content table tr:nth-child(even) td { background: #f9f7f4; }
+  .article-content img { width: 100%; border-radius: 4px; margin: 16px 0; display: block; }
   .article-content ul, .article-content ol { padding-left: 20px; margin-bottom: 14px; }
   .article-content ul { list-style: disc; }
   .article-content ol { list-style: decimal; }
   .article-content li { margin-bottom: 6px; }
-  .article-content img { width: 100%; border-radius: 4px; margin: 16px 0; display: block; }
-  .mc-table { width: 100%; border-collapse: collapse; font-family: 'Noto Sans Thai', sans-serif; font-size: 13px; margin: 8px 0; }
-  .mc-table th { background: #0c244a; color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; white-space: nowrap; }
-  .mc-table td { padding: 8px 14px !important; border-bottom: 1px solid rgba(0,0,0,.07); vertical-align: middle; color: #1a2e44; }
-  .mc-table tr:last-child td { border-bottom: none; }
-  .mc-table .td-date { font-weight: 700; color: #0c244a; font-size: 12px; white-space: nowrap; vertical-align: top; padding-top: 12px !important; background: #f9f7f4; border-right: 1px solid rgba(0,0,0,.07); }
-  .mc-table .td-type { white-space: nowrap; }
-  .mc-type-macro    { background: #e8f0fb; color: #1a3a6b; padding: 2px 8px; font-size: 11px; font-weight: 600; display: inline-block; }
-  .mc-type-micro    { background: #fef3cd; color: #92600a; padding: 2px 8px; font-size: 11px; font-weight: 600; display: inline-block; }
-  .mc-type-earnings { background: #d4edda; color: #155724; padding: 2px 8px; font-size: 11px; font-weight: 600; display: inline-block; }
-  .mc-type-global   { background: #e2d9f3; color: #4a235a; padding: 2px 8px; font-size: 11px; font-weight: 600; display: inline-block; }
-  .mc-num { text-align: right; white-space: nowrap; }
-  .mc-title { font-family: 'Noto Sans Thai', sans-serif; font-size: 16px; font-weight: 700; color: #0c244a; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #0c244a; display: inline-block; }
-  td { padding: 10px 20px !important; }
-  .article-content .mc-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  @media (max-width: 767px) { .article-content table { min-width: 600px; } }
-  .article-cta-row { display: grid; grid-template-columns: 3fr 1fr; gap: 16px; margin-bottom: 32px; margin-top: 48px; }
+  .article-cta-row { margin-bottom: 32px; margin-top: 48px; }
   .article-cta-left { border: 1.5px solid #0000001A; background: url('https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/bgoverall.jpg') center/cover no-repeat; padding: 44px 40px; }
-  .article-cta-right { border: 1.5px solid #0000001A; background: url('https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/bg-seeall.jpg') center/cover no-repeat; padding: 27px 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
   .article-cta-title { font-family: 'Noto Sans Thai', sans-serif; font-size: 32px; font-weight: 700; color: #0c244a; margin-bottom: 10px; line-height: 1.3; }
   .article-cta-sub { font-family: 'Noto Sans Thai', sans-serif; font-size: 16px; color: #3d506e; margin-bottom: 24px; line-height: 1.6; }
   @media (max-width: 767px) { .article-cta-title { font-size: 20px; } .article-cta-sub { font-size: 14px; } }
   .article-cta-btn { font-family: 'Noto Sans Thai', sans-serif; font-size: 14px; font-weight: 600; background: #0c244a; color: #fff; border: none; padding: 11px 22px; border-radius: 0; cursor: pointer; white-space: nowrap; transition: background .2s; text-decoration: none; display: inline-block; }
   .article-cta-btn:hover { background: #1a3a6b; color: #fff; }
-  .article-cta-right-title { font-family: 'Noto Sans Thai', sans-serif; font-size: 22px; font-weight: 700; color: #0c244a; margin-bottom: 24px; line-height: 1.4; text-align: center; }
-  .article-cta-outline-btn { font-family: 'Noto Sans Thai', sans-serif; font-size: 14px; font-weight: 600; background: #fff; color: #0c244a; border: 1.5px solid #0c244a; padding: 10px 22px; border-radius: 0; cursor: pointer; white-space: nowrap; transition: all .2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-  .article-cta-outline-btn:hover { background: #0c244a; color: #fff; }
-  @media (max-width: 767px) { .article-cta-row { grid-template-columns: 1fr; } .article-cta-left, .article-cta-right { padding: 24px 20px; } .article-cta-right { align-items: flex-start; } .article-cta-right-title { text-align: left; font-size: 20px; } }
-  @media (min-width: 768px) and (max-width: 991px) { .article-cta-left, .article-cta-right { padding: 24px 16px; } .article-cta-title { font-size: 24px; } }
+  @media (max-width: 767px) { .article-cta-left { padding: 24px 20px; } }
+  @media (min-width: 768px) and (max-width: 991px) { .article-cta-left { padding: 24px 16px; } .article-cta-title { font-size: 24px; } }
   .experts-section { margin-bottom: 0; background: transparent; }
   .experts-title { font-family: 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 700; color: #0c244a; margin-bottom: 20px; }
   .expert-item { display: flex; align-items: stretch; background: #fff; border-radius: 0; overflow: hidden; margin-bottom: 16px; }
@@ -123,35 +100,12 @@
   .expert-name { font-family: 'Noto Sans Thai', sans-serif; font-size: 14px; font-weight: 700; color: #0c244a; margin-bottom: 4px; }
   .expert-credentials { font-family: 'Noto Sans Thai', sans-serif; font-size: 12px; color: #3d506e; font-weight: 600; margin-bottom: 0; }
   .related-section { background: #F9F7F4; width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; padding: 32px 0 48px; }
-  .related-week-header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,.08); }
-  .related-week-chip { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; background: #3D506E; color: #fff; padding: 3px 10px; flex-shrink: 0; } .related-week-chip-monthly { background: #0C244A; }
+  .related-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .related-title { font-family: 'Noto Sans Thai', sans-serif; font-size: 18px; font-weight: 700; color: #0c244a; margin: 0; }
+  .related-week-header { display: none; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .related-week-chip { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; background: #3D506E; color: #fff; padding: 3px 10px; } .related-week-chip-monthly { background: #0C244A; }
   .related-week-label { font-family: 'Noto Sans Thai', sans-serif; font-size: 20px; font-weight: 700; color: #0c244a; }
-  .related-week-date { font-family: 'Noto Sans Thai', sans-serif; font-size: 13px; color: #3D506E; margin-left: 4px; }
-  .weekly-related-wrapper { position: relative; padding: 0 44px; }
-  .weekly-related-swiper { position: relative; overflow: hidden; padding: 8px 0; margin: -8px 0; }
-  .weekly-related-swiper .insight-card,
-  .week-modal-body .insight-card { position: relative; }
-  .weekly-related-wrapper .swiper-button-prev,
-  .weekly-related-wrapper .swiper-button-next { position: absolute; top: 38%; width: 32px; height: 32px; background: #fff; border: 1px solid rgba(0,0,0,.15); border-radius: 0; color: #0c244a; margin-top: 0; }
-  .weekly-related-wrapper .swiper-button-prev { left: 0; }
-  .weekly-related-wrapper .swiper-button-next { right: 0; }
-  .weekly-related-wrapper .swiper-button-prev::after,
-  .weekly-related-wrapper .swiper-button-next::after { font-size: 11px; font-weight: 700; }
-  .weekly-related-wrapper .swiper-button-disabled { opacity: 0.35; cursor: default; }
-  @media (max-width: 767px) {
-    .weekly-related-wrapper { padding: 0; }
-    .weekly-related-swiper .swiper-wrapper { display: block; transform: none !important; }
-    .weekly-related-swiper .swiper-button-prev,
-    .weekly-related-swiper .swiper-button-next { display: none; }
-    .weekly-related-swiper .swiper-slide { width: 100% !important; margin-bottom: 10px; }
-    .weekly-related-swiper .insight-card { flex-direction: row; align-items: stretch; box-shadow: none; padding-right: 14px; }
-    .weekly-related-swiper .insight-card:hover { box-shadow: none; transform: none; }
-    .weekly-related-swiper .insight-card-img-wrap { width: 110px; min-height: 90px; flex-shrink: 0; order: 2; background: transparent; }
-    .weekly-related-swiper .insight-card-img { width: 110px; height: 100%; object-fit: contain; }
-    .weekly-related-swiper .insight-card-img-tag { position: static; margin-bottom: 6px; align-self: flex-start; }
-    .weekly-related-swiper .insight-card-excerpt { display: none; }
-    .weekly-related-swiper .insight-card-content { order: 1; flex: 1; min-width: 0; }
-  }
+  @media (max-width: 767px) { .related-week-header { display: flex; } .related-grid { display: none !important; } }
   .insight-card { background: #fff; display: flex; flex-direction: column; height: 100%; cursor: pointer; transition: box-shadow .2s, transform .18s; box-shadow: 0 0 1px rgba(102,102,102,.14), 0 2px 6px rgba(102,102,102,.08); }
   .insight-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,.11); transform: translateY(-2px); }
   .insight-card-img-wrap { position: relative; flex-shrink: 0; }
@@ -165,22 +119,47 @@
   .tag-hot-issue { background: #F9EDED; color: #7a1c1c; border: 1px solid #EBC7C7; }
   .tag-asset-perf { background: #F8F4ED; color: #92600a; border: 1px solid #E9DEC7; }
   .tag-mkt-calendar { background: #E7E9ED; color: #0c244a; border: 1px solid #B4BBC7; }
+  .tag-asset-outlook { background: #F2F0EE; color: #3d2c1e; border: 1px solid #D6D1CB; }
   .tag-buy-list { background: #EEF1F0; color: #2c4a42; border: 1px solid #CBD4D0; }
   .tag-mkt-outlook { background: #F0EFF5; color: #3d2260; border: 1px solid #D1CCDF; }
-  .tag-asset-outlook { background: #F2F0EE; color: #3d2c1e; border: 1px solid #D6D1CB; }
+  .related-section { background: #F9F7F4; width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; padding: 32px 0 48px; }
+  .related-week-header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,.08); }
+  .related-week-chip { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; background: #3D506E; color: #fff; padding: 3px 10px; flex-shrink: 0; } .related-week-chip-monthly { background: #0C244A; }
+  .related-week-label { font-family: 'Noto Sans Thai', sans-serif; font-size: 20px; font-weight: 700; color: #0c244a; }
+  .weekly-related-wrapper { position: relative; padding: 14px 44px; overflow: hidden; }
+  .weekly-related-swiper { position: relative; overflow: clip; overflow-clip-margin: 10px; }
+  .weekly-related-swiper .insight-card { position: relative; }
+  .weekly-related-wrapper .swiper-button-prev,
+  .weekly-related-wrapper .swiper-button-next { position: absolute; top: 38%; width: 32px; height: 32px; background: #fff; border: 1px solid rgba(0,0,0,.15); border-radius: 0; color: #0c244a; margin-top: 0; }
+  .weekly-related-wrapper .swiper-button-prev { left: 0; }
+  .weekly-related-wrapper .swiper-button-next { right: 0; }
+  .weekly-related-wrapper .swiper-button-prev::after,
+  .weekly-related-wrapper .swiper-button-next::after { font-size: 11px; font-weight: 700; }
+  .weekly-related-wrapper .swiper-button-disabled { opacity: 0.35; cursor: default; }
   @media (max-width: 767px) {
-    .week-modal-body .insight-card { flex-direction: row; align-items: stretch; box-shadow: none; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,.08); }
-    .week-modal-body .insight-card:hover { box-shadow: none; transform: none; }
-    .week-modal-body .col-6:last-child .insight-card { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .weekly-related-wrapper { padding: 0; }
+    .weekly-related-swiper .swiper-wrapper { display: block; transform: none !important; }
+    .weekly-related-swiper .swiper-button-prev,
+    .weekly-related-swiper .swiper-button-next { display: none; }
+    .weekly-related-swiper .swiper-slide { width: 100% !important; margin-bottom: 10px; }
+    .weekly-related-swiper .insight-card,
+    .week-modal-body .insight-card { flex-direction: row; align-items: stretch; }
+    .weekly-related-swiper .insight-card { box-shadow: none; padding-right: 14px; }
+    .weekly-related-swiper .insight-card:hover { box-shadow: none; transform: none; }
+    .weekly-related-swiper .insight-card-img-wrap,
     .week-modal-body .insight-card-img-wrap { width: 110px; min-height: 90px; flex-shrink: 0; order: 2; background: transparent; }
+    .weekly-related-swiper .insight-card-img,
     .week-modal-body .insight-card-img { width: 110px; height: 100%; object-fit: contain; }
+    .weekly-related-swiper .insight-card-img-tag,
     .week-modal-body .insight-card-img-tag { position: static; margin-bottom: 6px; align-self: flex-start; }
+    .weekly-related-swiper .insight-card-excerpt,
     .week-modal-body .insight-card-excerpt { display: none; }
+    .weekly-related-swiper .insight-card-content,
     .week-modal-body .insight-card-content { order: 1; flex: 1; min-width: 0; }
     .week-modal-body .col-6 { width: 100%; }
-    .week-modal-body .row.g-3 { --bs-gutter-y: 0; }
   }
   @media (min-width: 768px) {
+    .weekly-related-swiper { overflow: hidden; }
     .weekly-related-swiper .swiper-slide { display: flex; }
     .weekly-related-swiper .insight-card { height: 100%; }
     .weekly-related-swiper .insight-card-title { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -210,20 +189,6 @@
       scroll-snap-align: start;
     }
   }
-  .week-modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.55); z-index: 1050; align-items: center; justify-content: center; padding: 16px; }
-  .week-modal-overlay.open { display: flex; }
-  .week-modal { background: #fff; width: 100%; max-width: 1100px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
-  .week-modal-body { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; padding: 24px 28px 32px; }
-  .week-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 28px; border-bottom: 1px solid rgba(0,0,0,.08); position: sticky; top: 0; background: #fff; z-index: 1; }
-  .week-modal-title { font-family: 'Noto Sans Thai', sans-serif; font-size: 16px; font-weight: 700; color: #0c244a; margin: 0; }
-  @media (max-width: 767px) {
-    .week-modal-overlay { align-items: flex-end; padding: 0; }
-    .week-modal { width: 100%; max-width: 100%; max-height: 88vh; border-radius: 16px 16px 0 0; }
-    .week-modal-header { padding-top: 22px; }
-    .week-modal-header::before { content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 36px; height: 4px; border-radius: 2px; background: rgba(0,0,0,.15); }
-  }
-  .week-modal-close { width: 32px; height: 32px; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #3d506e; border-radius: 50%; transition: background .15s; }
-  .week-modal-close:hover { background: #f0f0f0; }
 </style>
 </head>
 <body>
@@ -277,11 +242,11 @@
     <div class="container">
       <div class="col-12 col-lg-9 mx-auto">
       <ol>
-        <li><a href="https://landing.yuanta.co.th/wealth-home">Home</a></li>
+        <li><a href="https://wealth.yuanta.co.th/">Home</a></li>
         <li class="sep">/</li>
         <li><a href="/wealth-insights">Insights</a></li>
         <li class="sep">/</li>
-        <li class="active">Market calendar</li>
+        <li class="active">Market outlook</li>
       </ol>
       </div>
     </div>
@@ -291,7 +256,7 @@
   <section class="article-header">
     <div class="container">
       <div class="col-12 col-lg-9 mx-auto">
-        <span class="article-category-tag">Market calendar</span>
+        <span class="article-category-tag">Market outlook</span>
         <h1 class="article-title" id="f-title"></h1>
         <p class="article-subtitle" id="f-subtitle"></p>
         <p class="article-date" id="f-date"></p>
@@ -318,7 +283,7 @@
           <div class="ai-summary-text" id="f-ai-summary"></div>
         </div>
 
-        <!-- Body content (calendar table) -->
+        <!-- Body content -->
         <div class="article-content" id="f-body"></div>
 
         <!-- CTA -->
@@ -326,11 +291,7 @@
           <div class="article-cta-left">
             <p class="article-cta-title">ต้องการดูภาพรวมทั้งสัปดาห์?</p>
             <p class="article-cta-sub">เนื้อหานี้เป็นส่วนหนึ่งของบทวิเคราะห์ฉบับเต็มที่ครอบคลุมเนื้อหาทุก asset class</p>
-            <a class="article-cta-btn" id="f-cta-link" href="#" target="_blank">ดูมุมมองเพิ่มเติม</a>
-          </div>
-          <div class="article-cta-right">
-            <p class="article-cta-right-title">ดูมุมมอง<br>บทวิเคราะห์อื่นในเดือนนี้</p>
-            <button class="article-cta-outline-btn" onclick="openMonthlyModal()">บทวิเคราะห์ประจำเดือน &gt;</button>
+            <a class="article-cta-btn" id="f-cta-link" href="#" target="_blank" rel="noopener">ดูมุมมองเพิ่มเติม</a>
           </div>
         </div>
 
@@ -356,13 +317,13 @@
           </button>
         </div>
 
-        <!-- Related articles (other categories, same week) -->
+        <!-- Related articles (same month) -->
         <div class="related-section" id="relatedSection" style="display:none;">
           <div class="container">
           <div class="col-12 col-lg-9 mx-auto">
           <div class="related-week-header-row">
-            <span class="related-week-chip">Weekly</span>
-            <span class="related-week-label" id="f-subtitle-2"></span>
+            <span class="related-week-chip related-week-chip-monthly">Monthly</span>
+            <span class="related-week-label" id="f-related-label"></span>
           </div>
           <div class="weekly-related-wrapper">
             <div class="swiper weekly-related-swiper">
@@ -381,47 +342,11 @@
 
 </div>
 
-<!-- MONTHLY MODAL -->
-<div class="week-modal-overlay" id="monthlyModalOverlay" onclick="closeMonthlyModal(event)">
-  <div class="week-modal">
-    <div class="week-modal-header">
-      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
-        <span class="related-week-chip related-week-chip-monthly">Monthly</span>
-        <span class="related-week-label">บทวิเคราะห์รายเดือนเดียวกัน</span>
-      </div>
-      <button class="week-modal-close" onclick="closeMonthlyModalDirect()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="week-modal-body" id="monthlyModalBody">
-      <p style="color:#8f9aac;font-size:14px;font-family:'Noto Sans Thai',sans-serif;padding:8px 0;">ยังไม่มีบทวิเคราะห์ประจำเดือนนี้</p>
-    </div>
-  </div>
-</div>
-
-<!-- Weekly modal -->
-<div class="week-modal-overlay" id="weeklyModalOverlay" onclick="closeWeeklyModal(event)">
-  <div class="week-modal">
-    <div class="week-modal-header">
-      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
-        <span class="related-week-chip">Weekly</span>
-        <span class="related-week-label" id="f-subtitle-3"></span>
-      </div>
-      <button class="week-modal-close" onclick="closeWeeklyModalDirect()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="week-modal-body" id="weekModalBody">
-      <p style="font-family:'Noto Sans Thai',sans-serif;font-size:14px;color:#3d506e;">กำลังโหลด...</p>
-    </div>
-  </div>
-</div>
-
 <!-- [POC] row-not-found fallback (real page redirects to /wealth-insights; this static demo shows a message instead) -->
 <section id="notFoundSection" style="display:none; padding: 80px 0; text-align: center;">
   <div class="container">
     <p style="color: #3d506e; font-size: 16px;">ไม่พบบทวิเคราะห์ที่ระบุ</p>
-    <a href="#" style="color: #a2603c;">← กลับไปหน้า Insights</a>
+    <a href="/wealth-insights" style="color: #a2603c;">← กลับไปหน้า Insights</a>
   </div>
 </section>
 
@@ -532,17 +457,19 @@
 <script src="https://wealth.yuanta.co.th/hubfs/hub_generated/template_assets/1/345935938263/1780979736919/template_main.min.js"></script>
 
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var nav = document.querySelector('.navbar, nav, header');
+    if (nav) document.documentElement.style.setProperty('--nav-height', nav.offsetHeight + 'px');
+    document.querySelectorAll('.article-content table').forEach(function(tbl) {
+      tbl.style.width = '100%';
+      tbl.style.tableLayout = 'fixed'; tbl.style.borderColor = '#eaeaea';
+      tbl.querySelectorAll('col, th, td').forEach(function(el) { el.style.width = ''; el.removeAttribute('width'); }); tbl.querySelectorAll('td').forEach(function(el) { el.style.padding = '10px'; });
+    });
+  });
   function shareToFacebook() { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(location.href), '_blank'); }
   function shareToX() { window.open('https://x.com/intent/tweet?url=' + encodeURIComponent(location.href), '_blank'); }
   function copyLink() { navigator.clipboard.writeText(location.href).then(function() { alert('คัดลอกลิงก์แล้ว'); }); }
-  function shareByEmail() { location.href = 'mailto:?subject=Market Calendar — Yuanta Wealth&body=' + encodeURIComponent(location.href); }
-  function openWeeklyModal() { document.getElementById('weeklyModalOverlay').classList.add('open'); document.body.style.overflow = 'hidden'; }
-  function closeWeeklyModal(e) { if (e.target === document.getElementById('weeklyModalOverlay')) closeWeeklyModalDirect(); }
-  function closeWeeklyModalDirect() { document.getElementById('weeklyModalOverlay').classList.remove('open'); document.body.style.overflow = ''; }
-  function openMonthlyModal() { document.getElementById('monthlyModalOverlay').classList.add('open'); document.body.style.overflow = 'hidden'; }
-  function closeMonthlyModal(e) { if (e.target === document.getElementById('monthlyModalOverlay')) closeMonthlyModalDirect(); }
-  function closeMonthlyModalDirect() { document.getElementById('monthlyModalOverlay').classList.remove('open'); document.body.style.overflow = ''; }
-  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeWeeklyModalDirect(); closeMonthlyModalDirect(); } });
+  function shareByEmail() { location.href = 'mailto:?subject=Market Outlook — Yuanta Wealth&body=' + encodeURIComponent(location.href); }
 
   document.getElementById('newsletter-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -552,24 +479,9 @@
     msg.style.display = 'block';
     msg.textContent = '(PoC) ฟอร์มนี้ไม่ได้เชื่อมต่อจริง เพื่อไม่ให้สร้าง contact จริงใน HubSpot จาก sandbox';
   });
-
-  // Auto scroll hint for tables on mobile — only when table actually overflows
-  window.addEventListener('load', function() {
-    if (window.innerWidth >= 768) return;
-    document.querySelectorAll('.article-content table').forEach(function(table) {
-      var wrap = table.closest('div[style*="overflow-x"]') || table.parentElement;
-      if (!wrap || wrap.nextElementSibling && wrap.nextElementSibling.classList.contains('mc-scroll-hint')) return;
-      if (table.scrollWidth <= wrap.clientWidth) return;
-      var hint = document.createElement('p');
-      hint.className = 'mc-scroll-hint';
-      hint.style.cssText = "font-family:'Noto Sans Thai',sans-serif;font-size:11px;color:#8f9aac;text-align:center;margin:6px 0 0;display:flex;align-items:center;justify-content:center;gap:6px;";
-      hint.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#8f9aac" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>เลื่อนเพื่อดูข้อมูลเพิ่มเติม<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#8f9aac" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
-      wrap.insertAdjacentElement('afterend', hint);
-    });
-  });
 </script>
 <script>
-  // ── [POC] Supabase instead of HubDB's public REST API / server-side hubdb_table_rows ──
+  // ── [POC] Supabase fetch helper (was HubDB's public REST API / server-side hubdb_table_rows in production) ──
   var SUPABASE_URL = 'https://kqgdvpqygepvaifzrxki.supabase.co';
   var SUPABASE_ANON_KEY = 'sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp'; // publishable key, safe client-side, RLS = read-only
   function sbFetch(table, query) {
@@ -578,140 +490,43 @@
     }).then(function (r) { return r.json(); }).catch(function () { return []; });
   }
 
-  var FALLBACK_IMG = 'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/comingsoon.png';
   var THUMB = {
-    weekly_hot_issue:               'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-hot-issue.png',
-    weekly_asset_performance:       'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-asset-performance.png',
-    weekly_buy_list:                'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-buy-list.png',
-    weekly_market_calendar:         'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-market-calendar.png',
-    monthly_hot_issue:              'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-hot-issue.png',
-    monthly_asset_performance:      'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-asset-performance.png',
-    monthly_buy_list:                'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-buy-list.png',
-    monthly_market_calendar:         'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-market-calendar.png',
-    monthly_market_outlook:          'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-market-outlook.png',
-    monthly_asset_class_outlook:     'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-asset-class-outlook.png'
+    hotIssue: 'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-hot-issue.png',
+    assetPerf: 'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-asset-performance.png',
+    assetOutlook: 'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-asset-class-outlook.png',
+    mktCalendar: 'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-market-calendar.png',
+    buyList: 'https://wealth.yuanta.co.th/hubfs/raw_assets/public/yuanta-wealth-theme/images/thumb-buy-list.png'
   };
-  var RELATED_TABLES = [
-    {id:'weekly_hot_issue',         label:'Hot issue',        cls:'tag-hot-issue',     path:'/wealth-single-weekly-hotissue/'},
-    {id:'weekly_asset_performance', label:'Asset performance',cls:'tag-asset-perf',    path:'/wealth-single-weekly-asset-performance/'},
-    {id:'weekly_buy_list',          label:'Buy list',         cls:'tag-buy-list',      path:'/wealth-single-weekly-buy-list/'},
-  ];
-  var SPLIT_WEEKLY_TABLE_IDS = { 'weekly_hot_issue': true }; // hot-issue: multiple topic rows can share one week_slug
+  var THAI_MONTHS_FULL = ['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 
-  function fetchWeekRows(t, week) {
-    var limit = SPLIT_WEEKLY_TABLE_IDS[t.id] ? 50 : 1;
-    return sbFetch(t.id, 'select=*&week_slug=eq.' + encodeURIComponent(week) + '&limit=' + limit)
-      .then(function(rows) { return (rows || []).map(function(row) { return { values: row, _table: t }; }); });
+  function thaiMonthYear(dateStr) {
+    var months = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+    var d = new Date(dateStr + 'T00:00:00Z');
+    return d.getUTCDate() + ' ' + months[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
   }
-
-  function excerptText(a) {
-    if (a.values.description) return a.values.description;
-    var tmp = document.createElement('div');
-    tmp.innerHTML = a.values.ai_summary || '';
-    return (tmp.textContent || '').trim();
-  }
-
-  function thaiDate(s) {
+  function shortDate(s) {
     if (!s) return '';
+    var months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
     var d = new Date(s + 'T00:00:00Z');
-    var m = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
-    return d.getUTCDate() + ' ' + m[d.getUTCMonth()] + ' ' + (d.getUTCFullYear() + 543);
+    return d.getUTCDate() + ' ' + months[d.getUTCMonth()] + ' ' + (d.getUTCFullYear() + 543);
   }
-
-  function loadRelated(week) {
-    Promise.all(RELATED_TABLES.map(function(t) { return fetchWeekRows(t, week); })).then(function(results) {
-      var valid = [];
-      results.forEach(function(rows) { valid = valid.concat(rows); });
-      if (!valid.length) return;
-      var wrapper = document.getElementById('relatedSwiperWrapper');
-      var section = document.getElementById('relatedSection');
-      if (!wrapper || !section) return;
-      wrapper.innerHTML = valid.map(function(a) {
-        var t = a._table;
-        var src = THUMB[t.id] || FALLBACK_IMG;
-        var url = t.path + (a.values.week_slug || '');
-        return '<div class="swiper-slide">'
-          + '<div class="insight-card" onclick="location.href=\'' + url + '\'">'
-          + '<div class="insight-card-img-wrap">'
-          + '<img class="insight-card-img" src="' + src + '" alt="" />'
-          + '</div>'
-          + '<div class="insight-card-content">'
-          + '<span class="insight-card-img-tag insight-tag ' + t.cls + '">' + t.label + '</span>'
-          + '<h4 class="insight-card-title">' + (a.values.main_title || '') + '</h4>'
-          + '<p class="insight-card-date">' + thaiDate(a.values.page_date) + '</p>'
-          + '<p class="insight-card-excerpt">' + excerptText(a) + '</p>'
-          + '</div></div></div>';
-      }).join('');
-      section.style.display = '';
-      new Swiper('.weekly-related-swiper', {
-        slidesPerView: 4,
-        spaceBetween: 16,
-        watchOverflow: false,
-        navigation: { prevEl: '.weekly-prev', nextEl: '.weekly-next', disabledClass: 'swiper-button-disabled' },
-        breakpoints: {
-          0:   { enabled: false },
-          768: { enabled: false },
-          992: { enabled: true, slidesPerView: 4, spaceBetween: 16 }
-        }
-      });
-    });
-
-    // [POC] weekly modal reuses the same fetched rows (was a server-rendered HubL for-loop)
-    Promise.all(RELATED_TABLES.map(function(t) { return fetchWeekRows(t, week); })).then(function(results) {
-      var valid = [];
-      results.forEach(function(rows) { valid = valid.concat(rows); });
-      var modalBody = document.getElementById('weekModalBody');
-      modalBody.innerHTML = valid.length
-        ? '<div class="row g-3">' + valid.map(function(a) {
-            var t = a._table, src = THUMB[t.id] || FALLBACK_IMG, url = t.path + (a.values.week_slug || '');
-            return '<div class="col-6 col-lg-3">'
-              + '<div class="insight-card" onclick="location.href=\'' + url + '\'">'
-              + '<div class="insight-card-img-wrap"><img class="insight-card-img" src="' + src + '" alt="" /></div>'
-              + '<div class="insight-card-content">'
-              + '<span class="insight-card-img-tag insight-tag ' + t.cls + '">' + t.label + '</span>'
-              + '<h4 class="insight-card-title">' + (a.values.main_title || '') + '</h4>'
-              + '<p class="insight-card-date">' + thaiDate(a.values.page_date) + '</p>'
-              + '<p class="insight-card-excerpt">' + excerptText(a) + '</p>'
-              + '</div></div></div>';
-          }).join('') + '</div>'
-        : '<p style="font-family:\'Noto Sans Thai\',sans-serif;font-size:14px;color:#3d506e;">ไม่มีบทความอื่นในสัปดาห์นี้</p>';
-    });
+  function stripHtml(html) {
+    var tmp = document.createElement('div');
+    tmp.innerHTML = html || '';
+    return tmp.textContent || '';
   }
-
-  // ── [POC] Monthly cross-link modal — was a server-side-only HubL loop, now a Supabase fetch ──
-  var MONTHLY_TABLES = [
-    {id:'monthly_hot_issue',           label:'Hot issue',           cls:'tag-hot-issue',     path:'/wealth-single-monthly-hotissue/',           useId: true},
-    {id:'monthly_asset_performance',   label:'Asset performance',   cls:'tag-asset-perf',    path:'/wealth-single-monthly-asset-performance/',  limit: 1},
-    {id:'monthly_buy_list',            label:'Buy list',            cls:'tag-buy-list',      path:'/wealth-single-monthly-buy-list/',           limit: 1},
-    {id:'monthly_market_calendar',     label:'Market calendar',     cls:'tag-mkt-calendar',  path:'/wealth-single-monthly-market-calendar/',    limit: 1},
-    {id:'monthly_market_outlook',      label:'Market outlook',      cls:'tag-mkt-outlook',   path:'/wealth-single-monthly-market-outlook/',     limit: 1},
-    {id:'monthly_asset_class_outlook', label:'Asset class outlook', cls:'tag-asset-outlook', path:'/wealth-single-monthly-asset-class-outlook/', useId: true},
-  ];
-
-  function loadMonthly(weekSlug) {
-    var monthSlug = weekSlug ? (weekSlug.slice(0, 7) + '-01') : '';
-    if (!monthSlug) return;
-    Promise.all(MONTHLY_TABLES.map(function (t) {
-      var q = 'select=*&week_slug=eq.' + encodeURIComponent(monthSlug) + (t.limit ? '&limit=' + t.limit : '');
-      return sbFetch(t.id, q).then(function (rows) { return (rows || []).map(function (row) { return { values: row, _table: t }; }); });
-    })).then(function (results) {
-      var valid = [].concat.apply([], results);
-      var body = document.getElementById('monthlyModalBody');
-      if (!valid.length) return; // default "ยังไม่มีบทวิเคราะห์ประจำเดือนนี้" stays
-      body.innerHTML = '<div class="row g-3">' + valid.map(function (a) {
-        var t = a._table, src = THUMB[t.id] || FALLBACK_IMG;
-        var url = t.path + (t.useId ? (a.values.path || '') : (a.values.week_slug || '').trim());
-        return '<div class="col-6 col-lg-3">'
-          + '<div class="insight-card" onclick="location.href=\'' + url + '\'">'
-          + '<div class="insight-card-img-wrap"><img class="insight-card-img" src="' + src + '" alt="" /></div>'
-          + '<div class="insight-card-content">'
-          + '<span class="insight-card-img-tag insight-tag ' + t.cls + '">' + t.label + '</span>'
-          + '<h4 class="insight-card-title">' + (a.values.main_title || '') + '</h4>'
-          + '<p class="insight-card-date">' + thaiDate(a.values.page_date) + '</p>'
-          + '<p class="insight-card-excerpt">' + excerptText(a) + '</p>'
-          + '</div></div></div>';
-      }).join('') + '</div>';
-    });
+  function insightCardHtml(row, cls, label, thumb, url, excerpt) {
+    return '<div class="swiper-slide">'
+      + '<div class="insight-card" onclick="location.href=\'' + url + '\'">'
+      + '<div class="insight-card-img-wrap">'
+      + '<img class="insight-card-img" src="' + thumb + '" alt="' + (row.main_title || '') + '" />'
+      + '</div>'
+      + '<div class="insight-card-content">'
+      + '<span class="insight-card-img-tag insight-tag ' + cls + '">' + label + '</span>'
+      + '<h4 class="insight-card-title">' + (row.main_title || '') + '</h4>'
+      + '<p class="insight-card-date">' + shortDate(row.page_date) + '</p>'
+      + (excerpt ? '<p class="insight-card-excerpt">' + excerpt + '</p>' : '')
+      + '</div></div></div>';
   }
 
   function loadExperts() {
@@ -732,26 +547,61 @@
     });
   }
 
+  function loadRelated(weekSlug) {
+    Promise.all([
+      sbFetch('monthly_hot_issue', 'select=*&week_slug=eq.' + encodeURIComponent(weekSlug)),
+      sbFetch('monthly_asset_performance', 'select=*&week_slug=eq.' + encodeURIComponent(weekSlug) + '&limit=1'),
+      sbFetch('monthly_asset_class_outlook', 'select=*&week_slug=eq.' + encodeURIComponent(weekSlug)),
+      sbFetch('monthly_market_calendar', 'select=*&week_slug=eq.' + encodeURIComponent(weekSlug) + '&limit=1'),
+      sbFetch('monthly_buy_list', 'select=*&week_slug=eq.' + encodeURIComponent(weekSlug) + '&limit=1')
+    ]).then(function (results) {
+      var hotIssue = results[0] || [], assetPerf = results[1] || [], assetOutlook = results[2] || [],
+          mktCalendar = results[3] || [], buyList = results[4] || [];
+      var slides = []
+        .concat(hotIssue.map(function (r) { return insightCardHtml(r, 'tag-hot-issue', 'Hot issue', THUMB.hotIssue, '/wealth-single-monthly-hotissue/' + (r.path || ''), r.description || stripHtml(r.ai_summary)); }))
+        .concat(assetPerf.map(function (r) { return insightCardHtml(r, 'tag-asset-perf', 'Asset performance', THUMB.assetPerf, '/wealth-single-monthly-asset-performance/' + (r.week_slug || ''), r.description); }))
+        .concat(assetOutlook.map(function (r) { return insightCardHtml(r, 'tag-asset-outlook', 'Asset class outlook', THUMB.assetOutlook, '/wealth-single-monthly-asset-class-outlook/' + (r.path || ''), r.description || stripHtml(r.ai_summary)); }))
+        .concat(mktCalendar.map(function (r) { return insightCardHtml(r, 'tag-mkt-calendar', 'Market calendar', THUMB.mktCalendar, '/wealth-single-monthly-market-calendar/' + (r.week_slug || ''), r.description); }))
+        .concat(buyList.map(function (r) { return insightCardHtml(r, 'tag-buy-list', 'Buy list', THUMB.buyList, '/wealth-single-monthly-buy-list/' + (r.week_slug || ''), r.description); }));
+
+      if (!slides.length) return;
+
+      var y = parseInt(weekSlug.slice(0, 4), 10) + 543;
+      var m = parseInt(weekSlug.slice(5, 7), 10);
+      document.getElementById('f-related-label').textContent = THAI_MONTHS_FULL[m] + ' ' + y;
+      document.getElementById('relatedSwiperWrapper').innerHTML = slides.join('');
+      document.getElementById('relatedSection').style.display = '';
+      new Swiper('.weekly-related-swiper', {
+        slidesPerView: 4,
+        spaceBetween: 16,
+        watchOverflow: false,
+        navigation: { prevEl: '.weekly-prev', nextEl: '.weekly-next', disabledClass: 'swiper-button-disabled' },
+        breakpoints: {
+          0:   { enabled: false },
+          768: { enabled: false },
+          992: { enabled: true, slidesPerView: 4, spaceBetween: 16 }
+        }
+      });
+    });
+  }
+
   function renderRow(row) {
     document.getElementById('f-title').textContent = row.main_title;
     document.getElementById('f-subtitle').textContent = row.page_subtitle;
-    document.getElementById('f-date').textContent = thaiDate(row.page_date);
+    document.getElementById('f-date').textContent = thaiMonthYear(row.page_date);
     document.getElementById('f-ai-summary').innerHTML = row.ai_summary;
     document.getElementById('f-body').innerHTML = row.body;
-    document.getElementById('f-cta-link').href = '/wealth-weekly-report?week=' + encodeURIComponent(row.week_slug);
-    document.getElementById('f-subtitle-2').textContent = row.page_subtitle;
-    document.getElementById('f-subtitle-3').textContent = row.page_subtitle;
+    document.getElementById('f-cta-link').href = '/wealth-monthly-report?week=' + encodeURIComponent(row.week_slug);
     document.getElementById('mainContent').style.display = '';
     document.getElementById('notFoundSection').style.display = 'none';
     loadExperts();
     loadRelated(row.week_slug);
-    loadMonthly(row.week_slug);
   }
 
   function loadMainRow() {
     var week = new URLSearchParams(location.search).get('week');
     var filter = week ? ('&week_slug=eq.' + encodeURIComponent(week)) : '';
-    sbFetch('weekly_market_calendar', 'select=*&order=week_slug.desc&limit=1' + filter).then(function (rows) {
+    sbFetch('monthly_market_outlook', 'select=*&order=week_slug.desc&limit=1' + filter).then(function (rows) {
       if (!rows || !rows.length) {
         document.getElementById('mainContent').style.display = 'none';
         document.getElementById('notFoundSection').style.display = '';
