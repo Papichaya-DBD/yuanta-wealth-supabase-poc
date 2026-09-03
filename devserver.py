@@ -24,6 +24,7 @@ EXACT_ROUTES = {
     '/wealth-insights': 'insights.html',
     '/wealth-contactus': 'contact-us.html',
     '/contact-us': 'contact-us.html',
+    '/contact-us.html': 'contact-us.html',
 }
 
 # Prefix routes (single-article pages, production keeps the slug after the prefix —
