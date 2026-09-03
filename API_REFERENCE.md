@@ -8,6 +8,11 @@ someone outside this project can pick it up and start pulling real data immediat
 > **Status: Proof-of-concept only.** This is a sandboxed evaluation project, isolated from
 > production HubSpot/HubDB. Data here is a snapshot, not live-synced.
 
+> **Assets are fully self-hosted.** Every `cover_image`, `photo`, `thumbnail`, and `pdf_url`
+> field points at this project's own Supabase Storage bucket (`wealth-assets`), not HubSpot —
+> the actual image/PDF files were migrated over, not just the row data. This PoC has zero
+> runtime dependency on HubSpot.
+
 ---
 
 ## 1. Base URL & Auth
