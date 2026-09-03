@@ -19,6 +19,7 @@ EXACT_ROUTES = {
     '/': 'home.html',
     '/wealth-whyus': 'why-us.html',
     '/why-us': 'why-us.html',
+    '/why-us.html': 'why-us.html',
     '/wealth-privilegesandevents': 'privileges-events.html',
     '/privileges-events': 'privileges-events.html',
     '/wealth-insights': 'insights.html',
