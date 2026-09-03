@@ -34,8 +34,8 @@ EXACT_ROUTES = {
 # our PoC pages don't do slug-based routing yet, they just load the latest row, so the
 # slug segment is ignored and the same file is served regardless of what follows).
 PREFIX_ROUTES = {
-    '/wealth-single-weekly-hotissue/':            'single-weekly-hot-issue.html',
-    '/wealth-single-weekly-asset-performance/':   'single-weekly-asset-performance.html',
+    '/wealth-single-weekly-hotissue/':            'single-hot-issue.html',
+    '/wealth-single-weekly-asset-performance/':   'single-asset-performance.html',
     '/wealth-single-weekly-buy-list/':            'single-buy-list.html',
     '/wealth-single-weekly-market-calendar/':     'single-weekly-market-calendar.html',
     '/wealth-single-monthly-hotissue/':           'single-monthly-hot-issue.html',
