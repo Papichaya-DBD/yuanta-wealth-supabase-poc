@@ -20,6 +20,7 @@ be pasted into a chat or committed to this repo:
 Safe to re-run: already-migrated rows (url already points at Supabase Storage)
 and already-uploaded files (same derived storage path) are skipped.
 """
+import hashlib
 import json
 import mimetypes
 import os
@@ -100,6 +101,18 @@ def ensure_bucket():
             raise
 
 
+def ascii_safe_segment(segment):
+    """Supabase Storage rejects non-ASCII bytes in an object key with a 400
+    InvalidKey error (percent-encoding doesn't help -- the server decodes the
+    URL path before validating the key). Replace any such segment with a
+    stable ascii slug derived from its content, keeping the extension."""
+    if segment.isascii():
+        return segment
+    base, dot, ext = segment.rpartition(".")
+    digest = hashlib.sha1(segment.encode("utf-8")).hexdigest()[:10]
+    return f"asset-{digest}.{ext}" if dot and ext.isascii() else f"asset-{digest}"
+
+
 def storage_path_for(url):
     """Derive a stable, traceable storage path from a HubSpot hubfs URL."""
     parsed = urllib.parse.urlparse(url)
@@ -113,7 +126,7 @@ def storage_path_for(url):
         path = parts[1] if len(parts) > 1 else parts[0]
     else:
         path = path.lstrip("/")
-    return path
+    return "/".join(ascii_safe_segment(p) for p in path.split("/"))
 
 
 def guess_content_type(path):
