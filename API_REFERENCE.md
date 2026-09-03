@@ -92,6 +92,7 @@ row for this page":
 
 #### `weekly_hot_issue` — *split table*
 Weekly "what's happening in markets" articles. Multiple topics per week.
+
 | Column | Type | Notes |
 |---|---|---|
 | `path` | text | unique row id, e.g. `2026-06-15-fed-rate-decision` |
@@ -116,6 +117,7 @@ Weekly asset-class performance recap. `week_slug`, `main_title`, `page_subtitle`
 
 #### `weekly_buy_list` — 3 rows per week (one per portfolio model)
 Weekly recommended portfolio. `model` is `defender` / `flexible` / `growth`.
+
 | Column | Notes |
 |---|---|
 | `week_slug`, `model` | composite identity — one row per (week, model) |
@@ -135,6 +137,7 @@ Upcoming economic calendar. Same base shape as `weekly_asset_performance` plus `
 
 #### `weekly_pdf` — one row per week
 Just a pointer to the published PDF report.
+
 | Column | Notes |
 |---|---|
 | `week_slug` | |
@@ -171,6 +174,7 @@ curl ".../monthly_asset_class_outlook?select=*&week_slug=eq.2026-07-01" -H "..."
 ### Shared reference data
 
 #### `experts` — analyst bios, used on every article page's "บทวิเคราะห์โดย" section
+
 | Column | Notes |
 |---|---|
 | `name`, `title`, `credentials` | |
@@ -182,6 +186,7 @@ curl ".../experts?select=*&order=order.asc" -H "..."
 ```
 
 #### `fund_detail` — lookup by ticker, used by the "recommended fund" drawer on buy-list pages
+
 | Column | Notes |
 |---|---|
 | `ticker` | e.g. `ACWI`, `UGISFX-N` — **this is the lookup key**, not `id` |
