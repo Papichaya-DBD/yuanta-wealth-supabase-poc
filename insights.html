@@ -961,6 +961,10 @@
       {id:'monthly_asset_class_outlook', type:'asset-class-outlook',label:'Asset class outlook', cls:'tag-asset-outlook', path:'/wealth-single-monthly-asset-class-outlook/'},
     ];
 
+    // [POC] split tables: several topic rows can share one week_slug, so each row's real
+    // identity is its `path` column, not week_slug (which only tells you the period).
+    var SPLIT_TABLE_IDS = { 'weekly_hot_issue': true, 'monthly_hot_issue': true, 'monthly_asset_class_outlook': true };
+
     var SVG_ARROW = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     var SVG_PREV  = '';
     var SVG_NEXT  = '';
@@ -995,8 +999,9 @@
       return (a._table && THUMB[a._table.id]) || FALLBACK_IMG;
     }
     function articleUrl(a) {
-      var slug = a.values.week_slug || a.path || '';
-      return a._table.path + slug;
+      var t = a._table;
+      var slug = SPLIT_TABLE_IDS[t.id] ? (a.path || a.values.week_slug || '') : (a.values.week_slug || a.path || '');
+      return t.path + slug;
     }
 
     // ── Card / week HTML builders ──
@@ -1312,12 +1317,13 @@
         var allArticles = [].concat.apply([], results);
         if (!allArticles.length) { if (empty) empty.style.display = ''; return; }
 
-        // keep only first row per type+slug (monthly tables may have multiple rows per period)
+        // De-dupe defensively (a table returning the exact same row twice) -- split tables
+        // (SPLIT_TABLE_IDS) key on the row's own unique `path`, so every topic is kept;
+        // single-row-per-period tables key on week_slug, matching their real shape.
         var seenPerType = {};
         allArticles = allArticles.filter(function(a) {
-          var type = a._table.type;
-          var slug = a.values.week_slug || a.path || '';
-          var key = type + '|' + slug;
+          var t = a._table;
+          var key = t.id + '|' + (SPLIT_TABLE_IDS[t.id] ? (a.path || '') : (a.values.week_slug || a.path || ''));
           if (seenPerType[key]) return false;
           seenPerType[key] = true;
           return true;
