@@ -345,17 +345,10 @@
 <section class="newsletter-section">
   <div class="container">
     <div class="row align-items-center gy-5">
-      <div class="col-12 col-lg-6">
+      <div class="col-12">
         <p class="newsletter-label">Exclusive Insights</p>
         <h2 class="newsletter-title">Unlock Insights &amp;<br>Market Intelligence</h2>
         <p class="newsletter-desc">รับข้อมูลเชิงลึกด้านการลงทุน บทวิเคราะห์ตลาด และโอกาสการลงทุนพิเศษ ส่งตรงถึงอีเมลของคุณทุกสัปดาห์</p>
-      </div>
-      <div class="col-12 col-lg-6">
-        <form class="newsletter-form" id="newsletter-form">
-          <input type="email" id="newsletter-email" placeholder="กรอกอีเมลของคุณ" required />
-          <button type="submit">Subscribe to insights</button>
-        </form>
-        <p id="newsletter-msg" style="display:none; margin-top:12px; font-size:14px; color:rgba(255,255,255,0.8);"></p>
       </div>
     </div>
   </div>
@@ -670,14 +663,6 @@
   function shareToX() { window.open('https://x.com/intent/tweet?url=' + encodeURIComponent(location.href), '_blank'); }
   function copyLink() { navigator.clipboard.writeText(location.href).then(function() { alert('คัดลอกลิงก์แล้ว'); }); }
   function shareByEmail() { location.href = 'mailto:?subject=Hot Issue — Yuanta Wealth&body=' + encodeURIComponent(location.href); }
-
-  document.getElementById('newsletter-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    var msg = document.getElementById('newsletter-msg');
-    msg.style.display = 'block';
-    msg.textContent = '[PoC demo] ขอบคุณ! เราจะส่ง Insights ให้คุณเร็วๆ นี้';
-    document.getElementById('newsletter-form').reset();
-  });
 </script>
 </body>
 </html>

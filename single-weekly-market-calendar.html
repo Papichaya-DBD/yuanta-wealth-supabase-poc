@@ -429,17 +429,10 @@
 <section class="newsletter-section">
   <div class="container">
     <div class="row align-items-center gy-5">
-      <div class="col-12 col-lg-6">
+      <div class="col-12">
         <p class="newsletter-label">Exclusive Insights</p>
         <h2 class="newsletter-title">Unlock Insights &amp;<br>Market Intelligence</h2>
         <p class="newsletter-desc">รับข้อมูลเชิงลึกด้านการลงทุน บทวิเคราะห์ตลาด และโอกาสการลงทุนพิเศษ ส่งตรงถึงอีเมลของคุณทุกสัปดาห์</p>
-      </div>
-      <div class="col-12 col-lg-6">
-        <form class="newsletter-form" id="newsletter-form">
-          <input type="email" id="newsletter-email" placeholder="กรอกอีเมลของคุณ" required />
-          <button type="submit">Subscribe to insights</button>
-        </form>
-        <p id="newsletter-msg" style="display:none; margin-top:12px; font-size:14px; color:rgba(255,255,255,0.8);"></p>
       </div>
     </div>
   </div>
@@ -543,15 +536,6 @@
   function closeMonthlyModal(e) { if (e.target === document.getElementById('monthlyModalOverlay')) closeMonthlyModalDirect(); }
   function closeMonthlyModalDirect() { document.getElementById('monthlyModalOverlay').classList.remove('open'); document.body.style.overflow = ''; }
   document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeWeeklyModalDirect(); closeMonthlyModalDirect(); } });
-
-  document.getElementById('newsletter-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    var msg = document.getElementById('newsletter-msg');
-    // [POC] real submission disabled on purpose — production POSTs to the live HubSpot
-    // portal (43844850) and would create a real contact/lead from a sandbox test.
-    msg.style.display = 'block';
-    msg.textContent = '(PoC) ฟอร์มนี้ไม่ได้เชื่อมต่อจริง เพื่อไม่ให้สร้าง contact จริงใน HubSpot จาก sandbox';
-  });
 
   // Auto scroll hint for tables on mobile — only when table actually overflows
   window.addEventListener('load', function() {
