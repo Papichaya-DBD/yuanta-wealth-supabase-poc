@@ -128,6 +128,9 @@
       padding: 3px 10px;
       white-space: nowrap;
     }
+    .week-chip-monthly {
+      background: #0C244A;
+    }
     .week-label {
       font-family: 'Noto Sans Thai', sans-serif;
       font-size: 20px;
@@ -995,6 +998,14 @@
       }
       return dS.getUTCDate() + ' ' + THAI_MONTHS[dS.getUTCMonth()] + '–' + dE.getUTCDate() + ' ' + THAI_MONTHS[dE.getUTCMonth()] + ' ' + y;
     }
+    // [POC] Monthly section headers show just "<month> <year>" — no day range, unlike weekly ones.
+    var THAI_MONTHS_FULL = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+    function thaiMonthLabel(articles) {
+      var slug = (articles[0] && articles[0].values.week_slug) || '';
+      var d = parseDate(slug);
+      if (!d) return '';
+      return THAI_MONTHS_FULL[d.getUTCMonth()] + ' ' + (d.getUTCFullYear() + 543);
+    }
     function imgUrl(a) {
       return (a._table && THUMB[a._table.id]) || FALLBACK_IMG;
     }
@@ -1019,11 +1030,12 @@
     }
     function weekHeaderHtml(articles) {
       var _slug = (articles[0] && articles[0].values.week_slug) || '';
-      var _chip = /^\d{4}-\d{2}-01$/.test(_slug) ? 'Monthly' : 'Weekly';
+      var _isMonthly = /^\d{4}-\d{2}-01$/.test(_slug);
+      var _chip = _isMonthly ? 'Monthly' : 'Weekly';
       return '<div class="week-section-header">'
         + '<div class="week-section-left">'
-        + '<span class="week-chip">' + _chip + '</span>'
-        + '<span class="week-label">' + thaiDateRange(articles) + '</span>'
+        + '<span class="week-chip' + (_isMonthly ? ' week-chip-monthly' : '') + '">' + _chip + '</span>'
+        + '<span class="week-label">' + (_isMonthly ? thaiMonthLabel(articles) : thaiDateRange(articles)) + '</span>'
         + '</div>'
         + '<a href="#" class="week-see-all">ดูทั้งหมด ' + SVG_ARROW + '</a>'
         + '</div>';
@@ -1269,11 +1281,12 @@
         });
         filterGrid.innerHTML = weekOrder.map(function(slug) {
           var arts = weekGroups[slug];
-          var _chip = /^\d{4}-\d{2}-01$/.test(slug) ? 'Monthly' : 'Weekly';
+          var _isMonthly = /^\d{4}-\d{2}-01$/.test(slug);
+          var _chip = _isMonthly ? 'Monthly' : 'Weekly';
           return '<div class="week-section">'
             + '<div class="week-section-header"><div class="week-section-left">'
-            + '<span class="week-chip">' + _chip + '</span>'
-            + '<span class="week-label">' + thaiDateRange(arts) + '</span>'
+            + '<span class="week-chip' + (_isMonthly ? ' week-chip-monthly' : '') + '">' + _chip + '</span>'
+            + '<span class="week-label">' + (_isMonthly ? thaiMonthLabel(arts) : thaiDateRange(arts)) + '</span>'
             + '</div></div>'
             + '<div class="row g-3">'
             + arts.map(function(a) {
