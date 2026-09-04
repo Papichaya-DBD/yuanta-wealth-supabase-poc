@@ -178,18 +178,6 @@ curl ".../monthly_asset_class_outlook?select=*&week_slug=eq.2026-07-01" -H "..."
 
 ### Shared reference data
 
-#### `experts` — analyst bios, used on every article page's "บทวิเคราะห์โดย" section
-
-| Column | Notes |
-|---|---|
-| `name`, `title`, `credentials` | |
-| `photo` | jsonb `{id, url, type}` |
-| `order` | numeric, sort ascending for display order |
-
-```bash
-curl ".../experts?select=*&order=order.asc" -H "..."
-```
-
 #### `fund_detail` — lookup by ticker, used by the "recommended fund" drawer on buy-list pages
 
 | Column | Notes |
@@ -202,14 +190,6 @@ curl ".../experts?select=*&order=order.asc" -H "..."
 ```bash
 curl ".../fund_detail?select=*&ticker=eq.ACWI" -H "..."
 ```
-
-#### `events` — Privileges & Events listing
-`slug`, `title`, `event_date`, `event_time`, `location`, `image` (jsonb), `body` (HTML), `category`,
-`is_published` (boolean — filter with `?is_published=eq.true` to match what the live site shows).
-
-#### `blog_general` — generic promo/campaign blog posts
-`slug`, `main_campaign`, `campaign_value`, `title`, `thumbnail` (jsonb), `content` (HTML),
-`conditions_title`/`conditions` (+ `_1`/`_2` variants for multiple T&C blocks), `cta_label`, `cta_url`.
 
 ---
 
