@@ -107,7 +107,7 @@ Weekly "what's happening in markets" articles. Multiple topics per week.
 | `description` | text | short excerpt (falls back to stripped `ai_summary` if empty) |
 | `ai_summary` | text | HTML |
 | `body` | text | HTML, full article |
-| `cover_image` | jsonb | `{id, url, type}` |
+| `cover_image` | jsonb | `{url, type, altText}` |
 | `is_published` | boolean | |
 
 ```bash
@@ -128,7 +128,7 @@ Weekly asset-class performance recap.
 | `description` | text | short excerpt (falls back to stripped `ai_summary` if empty) |
 | `ai_summary` | text | HTML |
 | `body` | text | HTML, full article |
-| `cover_image` | jsonb | `{id, url, type}` |
+| `cover_image` | jsonb | `{url, type, altText}` |
 
 No `is_published` column on this table (unlike `weekly_hot_issue`).
 
@@ -140,7 +140,7 @@ Weekly recommended portfolio. `model` is `defender` / `flexible` / `growth`.
 | `week_slug`, `model` | text | composite identity — one row per (week, model) |
 | `main_title`, `page_subtitle` | text | |
 | `page_date`, `week_start_date`, `week_end_date` | date | |
-| `cover_image` | jsonb | `{id, url, type}` |
+| `cover_image` | jsonb | `{url, type, altText}` |
 | `description` | text | |
 | `is_published` | boolean | |
 | `cio_content` | text | HTML |
@@ -164,7 +164,7 @@ Upcoming economic calendar.
 | `week_slug` | text | |
 | `main_title`, `page_subtitle` | text | |
 | `page_date`, `week_start_date`, `week_end_date` | date | |
-| `cover_image` | **text** ⚠️ | legacy format, NOT `jsonb` like every other table's image field — a raw string `"url,width,height,alt,fileId"` (comma-separated, only the first segment is the URL) |
+| `cover_image` | jsonb | `{url, type, altText}` |
 | `description` | text | |
 | `ai_summary` | text | HTML |
 | `body` | text | HTML |
@@ -189,8 +189,8 @@ curl ".../weekly_pdf?select=week_slug,pdf_url&order=week_slug.desc&limit=1" -H "
 
 Same **column names and types** as their weekly counterparts above, one publish cycle per calendar
 month (`week_slug = 'YYYY-MM-01'`) instead of per week — so `page_date`/`week_start_date`/
-`week_end_date` stay `date`, `cover_image` stays `jsonb` (none of the monthly tables have
-`weekly_market_calendar`'s legacy text quirk), `is_published` stays `boolean`, etc.
+`week_end_date` stay `date`, `cover_image` stays `jsonb {url, type, altText}`, `is_published` stays
+`boolean`, etc.
 
 | Table | Shape | Has `is_published`? | Notes |
 |---|---|---|---|

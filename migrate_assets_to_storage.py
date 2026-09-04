@@ -2,11 +2,11 @@
 """
 One-time migration: copy every image/PDF file this PoC still references from
 HubSpot's CDN (hubspotusercontent-na2.net) into Supabase Storage, then update
-every row's jsonb (or legacy text) field so the url points at Supabase instead.
+every row's jsonb field so the url points at Supabase instead.
 
 Why this exists: migrating the DATA (HubDB -> Supabase tables) was done earlier
-in this project, but the image/file fields only ever stored {id, url, type}
-JSON pointing back at HubSpot's own file host -- the actual files were never
+in this project, but the image/file fields only ever stored jsonb ({url, type,
+...}) pointing back at HubSpot's own file host -- the actual files were never
 copied. If HubSpot access is ever revoked, every image and PDF in this PoC
 would 404 even though the row text data lives entirely in Supabase. This
 script closes that gap.
@@ -40,24 +40,24 @@ if not SERVICE_ROLE_KEY:
         "Then: export SUPABASE_SERVICE_ROLE_KEY=\"...\"  (never commit or paste this key)"
     )
 
-# (table, id_column, field_column, is_jsonb)
-# is_jsonb=False is the one legacy field stored as a raw HubDB-style string
-# "url,width,height,alt,fileId" instead of a clean jsonb object.
+# (table, id_column, field_column) -- every image/PDF field in the schema is jsonb
+# {url, type, ...}. (weekly_market_calendar.cover_image used to be a legacy raw
+# "url,width,height,alt,fileId" string; it was normalized to jsonb separately.)
 TARGETS = [
-    ("weekly_hot_issue", "id", "cover_image", True),
-    ("weekly_asset_performance", "id", "cover_image", True),
-    ("weekly_market_calendar", "hs_id", "cover_image", False),
-    ("monthly_hot_issue", "id", "cover_image", True),
-    ("monthly_asset_performance", "id", "cover_image", True),
-    ("monthly_market_outlook", "id", "cover_image", True),
-    ("monthly_market_calendar", "id", "cover_image", True),
-    ("monthly_asset_class_outlook", "id", "cover_image", True),
-    ("weekly_buy_list", "id", "cover_image", True),
-    ("monthly_buy_list", "id", "cover_image", True),
-    ("experts", "id", "photo", True),
-    ("blog_general", "id", "thumbnail", True),
-    ("weekly_pdf", "id", "pdf_url", True),
-    ("monthly_pdf", "id", "pdf_url", True),
+    ("weekly_hot_issue", "id", "cover_image"),
+    ("weekly_asset_performance", "id", "cover_image"),
+    ("weekly_market_calendar", "hs_id", "cover_image"),
+    ("monthly_hot_issue", "id", "cover_image"),
+    ("monthly_asset_performance", "id", "cover_image"),
+    ("monthly_market_outlook", "id", "cover_image"),
+    ("monthly_market_calendar", "id", "cover_image"),
+    ("monthly_asset_class_outlook", "id", "cover_image"),
+    ("weekly_buy_list", "id", "cover_image"),
+    ("monthly_buy_list", "id", "cover_image"),
+    ("experts", "id", "photo"),
+    ("blog_general", "id", "thumbnail"),
+    ("weekly_pdf", "id", "pdf_url"),
+    ("monthly_pdf", "id", "pdf_url"),
 ]
 
 HEADERS = {
@@ -176,18 +176,12 @@ def migrate_one(old_url, cache):
     return new_url
 
 
-def parse_legacy_text_field(raw):
-    """weekly_market_calendar.cover_image: 'url,width,height,alt,fileId' (or just a bare url)."""
-    parts = raw.split(",", 1)
-    return parts[0], (parts[1] if len(parts) > 1 else "")
-
-
 def main():
     ensure_bucket()
     url_cache = {}
     total_rows_updated = 0
 
-    for table, id_col, field, is_jsonb in TARGETS:
+    for table, id_col, field in TARGETS:
         rows = api_get(f"/rest/v1/{table}?select={id_col},{field}")
         print(f"\n== {table}.{field} ({len(rows)} rows) ==")
         for row in rows:
@@ -196,22 +190,13 @@ def main():
             if not value:
                 continue
 
-            if is_jsonb:
-                old_url = value.get("url")
-                if not old_url or old_url.startswith(SUPABASE_URL):
-                    continue
-                new_url = migrate_one(old_url, url_cache)
-                if new_url == old_url:
-                    continue
-                new_value = {**value, "url": new_url}
-            else:
-                old_url, rest = parse_legacy_text_field(value)
-                if not old_url or old_url.startswith(SUPABASE_URL):
-                    continue
-                new_url = migrate_one(old_url, url_cache)
-                if new_url == old_url:
-                    continue
-                new_value = f"{new_url},{rest}" if rest else new_url
+            old_url = value.get("url")
+            if not old_url or old_url.startswith(SUPABASE_URL):
+                continue
+            new_url = migrate_one(old_url, url_cache)
+            if new_url == old_url:
+                continue
+            new_value = {**value, "url": new_url}
 
             api_patch(table, row_id, id_col, {field: new_value})
             total_rows_updated += 1
