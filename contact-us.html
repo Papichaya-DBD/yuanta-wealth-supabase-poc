@@ -10,11 +10,12 @@
   2. The 8 `{% module "contact_..." path="@hubspot/text", ..., value="..." %}` text modules
      have no override anywhere in this codebase, so they're inlined as their literal default
      values — same rendered output, just without the HubSpot module wrapper.
-  3. The multi-step form (Step 1 form -> Step 2 consent -> Step 3 success) is untouched UX-wise,
-     but the final "ยืนยันและส่งข้อมูล" click no longer POSTs to the real HubSpot Forms API
-     (api.hsforms.com/.../43e53319-...) — it shows the same success screen but with an added
-     note that nothing was actually transmitted, so testing this PoC never creates a real lead
-     in the live HubSpot portal.
+  3. The multi-step form (Step 1 form -> Step 2 consent -> Step 3 success) is untouched UX-wise.
+     The final "ยืนยันและส่งข้อมูล" click no longer POSTs to the real HubSpot Forms API
+     (api.hsforms.com/.../43e53319-...) — testing this PoC never creates a real lead in the
+     live HubSpot portal. Instead it inserts into Supabase's `contact_submissions` table
+     (write-only via RLS: the public key used here can add a row but can never read one back)
+     as an interim store while a real notification/CRM pipeline is decided on.
 -->
 <!doctype html>
 <html lang="th">
@@ -228,7 +229,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#b8996a" stroke-width="1.5" style="margin-bottom:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <p style="font-family: var(--font-sans); font-size: 16px; color: rgba(255,255,255,0.9); font-weight: 500; margin-bottom: 8px;">ขอบคุณครับ</p>
             <p style="font-family: var(--font-sans); font-size: 14px; color: rgba(255,255,255,0.65);">ทีมงานจะติดต่อกลับภายใน 1 วันทำการ</p>
-            <p style="font-family: var(--font-sans); font-size: 12px; color: rgba(255,255,255,0.4); margin-top:16px;">(PoC) ข้อมูลนี้ไม่ได้ถูกส่งไปที่ HubSpot จริง — จำลอง UI เท่านั้น</p>
+            <p style="font-family: var(--font-sans); font-size: 12px; color: rgba(255,255,255,0.4); margin-top:16px;">(PoC) ข้อมูลนี้ถูกบันทึกไว้ใน Supabase ของ sandbox นี้เท่านั้น — ไม่ได้ส่งไปที่ HubSpot จริง</p>
           </div>
         </div>
       </div>
@@ -424,14 +425,48 @@
     btn.disabled = true;
     btn.textContent = 'กำลังส่ง...';
 
-    // [POC] real submission disabled on purpose — production POSTs to the live HubSpot
-    // portal (43844850) and would create a real contact/lead from a sandbox test.
-    setTimeout(function() {
-      document.getElementById('consent-step').style.display = 'none';
-      document.getElementById('success-step').style.display = 'block';
+    // [POC] production POSTs to the live HubSpot portal (43844850) -- instead this writes
+    // to Supabase's `contact_submissions` table (insert-only via RLS: this anon key can
+    // add a row but can never read one back, so no other visitor's data is exposed) as an
+    // interim store while a real notification/CRM pipeline is decided on.
+    var fieldMap = {};
+    _pendingFields.forEach(function(f) { fieldMap[f.name] = f.value; });
+    var SUPABASE_URL = 'https://kqgdvpqygepvaifzrxki.supabase.co';
+    var SUPABASE_ANON_KEY = 'sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp';
+    fetch(SUPABASE_URL + '/rest/v1/contact_submissions', {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal'
+      },
+      body: JSON.stringify({
+        firstname: fieldMap.firstname || null,
+        lastname: fieldMap.lastname || null,
+        phone: fieldMap.phone || null,
+        email: fieldMap.email || null,
+        investment_amount: fieldMap.investment_amount || null,
+        message: fieldMap.message || null,
+        consent_communication: commConsent,
+        consent_data: dataConsent
+      })
+    }).then(function(r) {
       btn.disabled = false;
       btn.textContent = 'ยืนยันและส่งข้อมูล';
-    }, 400);
+      if (r.ok) {
+        document.getElementById('consent-step').style.display = 'none';
+        document.getElementById('success-step').style.display = 'block';
+      } else {
+        error.style.display = 'block';
+        error.textContent = 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+      }
+    }).catch(function() {
+      btn.disabled = false;
+      btn.textContent = 'ยืนยันและส่งข้อมูล';
+      error.style.display = 'block';
+      error.textContent = 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+    });
   });
 
   // Custom select
