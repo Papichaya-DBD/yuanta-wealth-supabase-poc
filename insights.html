@@ -1009,6 +1009,16 @@
     function imgUrl(a) {
       return (a._table && THUMB[a._table.id]) || FALLBACK_IMG;
     }
+    function stripHtml(html) {
+      var tmp = document.createElement('div');
+      tmp.innerHTML = html || '';
+      return tmp.textContent || '';
+    }
+    // [POC] some rows have no `description` -- fall back to a stripped ai_summary instead
+    // of leaving the excerpt blank.
+    function excerptOf(a) {
+      return a.values.description || stripHtml(a.values.ai_summary);
+    }
     function articleUrl(a) {
       var t = a._table;
       var slug = SPLIT_TABLE_IDS[t.id] ? (a.path || a.values.week_slug || '') : (a.values.week_slug || a.path || '');
@@ -1025,7 +1035,7 @@
         + '</div><div class="insight-card-content">'
         + '<p class="insight-card-date">' + thaiDate(a.values.page_date) + '</p>'
         + '<h4 class="insight-card-title">' + (a.values.main_title || '') + '</h4>'
-        + '<p class="insight-card-excerpt">' + (a.values.description || '') + '</p>'
+        + '<p class="insight-card-excerpt">' + excerptOf(a) + '</p>'
         + '</div></div>';
     }
     function weekHeaderHtml(articles) {
@@ -1076,7 +1086,7 @@
         + '<div class="featured-card-content">'
         + '<p class="featured-card-date">' + thaiDate(feat.values.page_date) + '</p>'
         + '<h2 class="featured-card-title">' + (feat.values.main_title || '') + '</h2>'
-        + '<p class="featured-card-excerpt">' + (feat.values.description || '') + '</p>'
+        + '<p class="featured-card-excerpt">' + excerptOf(feat) + '</p>'
         + '<a href="' + featUrl + '" class="read-more" onclick="event.stopPropagation()">อ่านเพิ่มเติม ' + SVG_ARROW + '</a>'
         + '</div></div>'
         + '<div class="article-list">' + listHtml
