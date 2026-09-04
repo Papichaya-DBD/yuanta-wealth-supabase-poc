@@ -582,6 +582,15 @@
   var CURRENT_WEEK = '';
   (function() {
     var path = new URLSearchParams(location.search).get('path');
+    if (!path) {
+      // [POC] every internal link in this repo (insights.html cards, related-article
+      // swipers, week/month modals) generates clean URLs like
+      // /wealth-single-monthly-asset-class-outlook/<path> with no ?path= query string --
+      // devserver.py serves this static file as-is without rewriting that into a query
+      // param, so also read the trailing URL path segment as a fallback.
+      var _segs = location.pathname.split('/').filter(Boolean);
+      if (_segs.length > 1) path = decodeURIComponent(_segs[_segs.length - 1]);
+    }
 
     function renderRow(v) {
       CURRENT_WEEK = v.week_slug;
