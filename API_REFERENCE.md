@@ -103,11 +103,12 @@ Weekly "what's happening in markets" articles. Multiple topics per week.
 | `path` | text | unique row id, e.g. `2026-06-15-fed-rate-decision` |
 | `week_slug` | text | e.g. `2026-06-15` |
 | `main_title`, `page_subtitle`, `sub_title` | text | |
-| `page_date` | date | |
+| `page_date`, `week_start_date`, `week_end_date` | date | |
 | `description` | text | short excerpt (falls back to stripped `ai_summary` if empty) |
 | `ai_summary` | text | HTML |
 | `body` | text | HTML, full article |
 | `cover_image` | jsonb | `{id, url, type}` |
+| `is_published` | boolean | |
 
 ```bash
 # All topics published in the week of 2026-06-15
@@ -117,36 +118,66 @@ curl ".../weekly_hot_issue?select=*&path=eq.2026-06-15-fed-rate-decision" -H "..
 ```
 
 #### `weekly_asset_performance` — one row per week
-Weekly asset-class performance recap. `week_slug`, `main_title`, `page_subtitle`, `page_date`,
-`description`, `ai_summary`, `body`, `cover_image` (same shape as above).
+Weekly asset-class performance recap.
+
+| Column | Type | Notes |
+|---|---|---|
+| `path`, `week_slug` | text | |
+| `main_title`, `page_subtitle` | text | |
+| `page_date`, `week_start_date`, `week_end_date` | date | |
+| `description` | text | short excerpt (falls back to stripped `ai_summary` if empty) |
+| `ai_summary` | text | HTML |
+| `body` | text | HTML, full article |
+| `cover_image` | jsonb | `{id, url, type}` |
+
+No `is_published` column on this table (unlike `weekly_hot_issue`).
 
 #### `weekly_buy_list` — 3 rows per week (one per portfolio model)
 Weekly recommended portfolio. `model` is `defender` / `flexible` / `growth`.
 
-| Column | Notes |
-|---|---|
-| `week_slug`, `model` | composite identity — one row per (week, model) |
-| `main_title`, `page_subtitle`, `page_date`, `cio_content` | |
-| `core_pct`, `satellite_pct` | numeric, portfolio split |
-| `gfi_*`, `geq_*` | Core holdings: Global Fixed Income / Global Equity — `_weight`, `_lt_return`, `_target_12m`, `_eps_12m`, `_funds` (comma-separated `TICKER:type` list, type ∈ `mf`/`dr`/`etf`) |
-| `sat_1_*` … `sat_8_*` | up to 8 Satellite holdings, same suffix pattern as `gfi_*`/`geq_*`, plus `_sub` and `_name` |
-| `perf_lt_return`, `perf_core_return`, `perf_sat_return`, `perf_risk_sd`, `perf_var_95` | headline performance/risk stats |
-| `source_text` | footnote/disclaimer text |
+| Column | Type | Notes |
+|---|---|---|
+| `week_slug`, `model` | text | composite identity — one row per (week, model) |
+| `main_title`, `page_subtitle` | text | |
+| `page_date`, `week_start_date`, `week_end_date` | date | |
+| `cover_image` | jsonb | `{id, url, type}` |
+| `description` | text | |
+| `is_published` | boolean | |
+| `cio_content` | text | HTML |
+| `core_pct`, `satellite_pct` | numeric | portfolio split |
+| `gfi_weight`, `geq_weight` | numeric | Core holdings: Global Fixed Income / Global Equity |
+| `gfi_lt_return`, `gfi_target_12m`, `gfi_eps_12m`, `gfi_funds`, `geq_lt_return`, `geq_target_12m`, `geq_eps_12m`, `geq_funds` | text | `_funds` is a comma-separated `TICKER:type` list, type ∈ `mf`/`dr`/`etf` |
+| `sat_1_weight` … `sat_8_weight` | numeric | up to 8 Satellite holdings |
+| `sat_1_name`, `sat_1_sub`, `sat_1_lt_return`, `sat_1_target_12m`, `sat_1_eps_12m`, `sat_1_funds` … (same suffixes for `sat_2` … `sat_8`) | text | same pattern as `gfi_*`/`geq_*`, plus `_sub`/`_name` |
+| `perf_lt_return`, `perf_core_return`, `perf_sat_return`, `perf_risk_sd`, `perf_var_95` | text | headline performance/risk stats |
+| `source_text` | text | footnote/disclaimer text |
 
 ```bash
 curl ".../weekly_buy_list?select=*&week_slug=eq.2026-06-15&model=eq.defender" -H "..."
 ```
 
 #### `weekly_market_calendar` — one row per week
-Upcoming economic calendar. Same base shape as `weekly_asset_performance` plus `week_start_date`/`week_end_date`.
+Upcoming economic calendar.
+
+| Column | Type | Notes |
+|---|---|---|
+| `week_slug` | text | |
+| `main_title`, `page_subtitle` | text | |
+| `page_date`, `week_start_date`, `week_end_date` | date | |
+| `cover_image` | **text** ⚠️ | legacy format, NOT `jsonb` like every other table's image field — a raw string `"url,width,height,alt,fileId"` (comma-separated, only the first segment is the URL) |
+| `description` | text | |
+| `ai_summary` | text | HTML |
+| `body` | text | HTML |
+
+No `is_published` column on this table.
 
 #### `weekly_pdf` — one row per week
 Just a pointer to the published PDF report.
 
-| Column | Notes |
-|---|---|
-| `week_slug` | |
-| `pdf_url` | jsonb `{id, url, type}` — `url` is the direct PDF link |
+| Column | Type | Notes |
+|---|---|---|
+| `week_slug` | text | |
+| `pdf_url` | jsonb | `{id, url, type}` — `url` is the direct PDF link |
 
 ```bash
 curl ".../weekly_pdf?select=week_slug,pdf_url&order=week_slug.desc&limit=1" -H "..."
@@ -156,18 +187,20 @@ curl ".../weekly_pdf?select=week_slug,pdf_url&order=week_slug.desc&limit=1" -H "
 
 ### Monthly content
 
-Same shapes as their weekly counterparts, one publish cycle per calendar month
-(`week_slug = 'YYYY-MM-01'`):
+Same **column names and types** as their weekly counterparts above, one publish cycle per calendar
+month (`week_slug = 'YYYY-MM-01'`) instead of per week — so `page_date`/`week_start_date`/
+`week_end_date` stay `date`, `cover_image` stays `jsonb` (none of the monthly tables have
+`weekly_market_calendar`'s legacy text quirk), `is_published` stays `boolean`, etc.
 
-| Table | Shape | Notes |
-|---|---|---|
-| `monthly_hot_issue` | split (by `path`) | |
-| `monthly_asset_performance` | one row/month | |
-| `monthly_market_outlook` | one row/month | |
-| `monthly_market_calendar` | one row/month | |
-| `monthly_asset_class_outlook` | split (by `path`) | multiple asset-class deep-dives per month, e.g. `2026-07-01-equity`, `2026-07-01-fixed-income`, `2026-07-01-gold`, `2026-07-01-global-fixed-income-portfolio` |
-| `monthly_buy_list` | 3 rows/month (by `model`) | same column set as `weekly_buy_list`, but satellite holdings only go up to `sat_8_*` (not 12, despite older front-end code looping to 12 — columns 9–12 simply don't exist here) |
-| `monthly_pdf` | one row/month | same shape as `weekly_pdf` |
+| Table | Shape | Has `is_published`? | Notes |
+|---|---|---|---|
+| `monthly_hot_issue` | split (by `path`) | no | |
+| `monthly_asset_performance` | one row/month | no | |
+| `monthly_market_outlook` | one row/month | no | |
+| `monthly_market_calendar` | one row/month | **yes** | |
+| `monthly_asset_class_outlook` | split (by `path`) | **yes** | multiple asset-class deep-dives per month, e.g. `2026-07-01-equity`, `2026-07-01-fixed-income`, `2026-07-01-gold`, `2026-07-01-global-fixed-income-portfolio` |
+| `monthly_buy_list` | 3 rows/month (by `model`) | **yes** | same column set as `weekly_buy_list`, but satellite holdings only go up to `sat_8_*` (not 12, despite older front-end code looping to 12 — columns 9–12 simply don't exist here) |
+| `monthly_pdf` | one row/month | n/a | same shape as `weekly_pdf` (`week_slug` text, `pdf_url` jsonb) |
 
 ```bash
 # All asset-class-outlook articles for July 2026
@@ -180,12 +213,13 @@ curl ".../monthly_asset_class_outlook?select=*&week_slug=eq.2026-07-01" -H "..."
 
 #### `fund_detail` — lookup by ticker, used by the "recommended fund" drawer on buy-list pages
 
-| Column | Notes |
-|---|---|
-| `ticker` | e.g. `ACWI`, `UGISFX-N` — **this is the lookup key**, not `id` |
-| `fund_name`, `fund_type` (`mf` / `dr` / `etf`) | |
-| `ai_summary` | HTML, short AI blurb |
-| `content` | HTML, fund highlights/detail |
+| Column | Type | Notes |
+|---|---|---|
+| `ticker` | text | e.g. `ACWI`, `UGISFX-N` — **this is the lookup key**, not `id` |
+| `fund_name` | text | |
+| `fund_type` | text | `mf` / `dr` / `etf` |
+| `ai_summary` | text | HTML, short AI blurb |
+| `content` | text | HTML, fund highlights/detail |
 
 ```bash
 curl ".../fund_detail?select=*&ticker=eq.ACWI" -H "..."
