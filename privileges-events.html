@@ -517,12 +517,15 @@
       return html;
     }
 
-    fetch('https://api.hubapi.com/cms/v3/hubdb/tables/1884011208/rows?portalId=43844850&sort=order&limit=100')
+    // [POC] Supabase instead of HubDB's public REST API (api.hubapi.com/cms/v3/hubdb/tables/1884011208)
+    var SUPABASE_URL = 'https://kqgdvpqygepvaifzrxki.supabase.co';
+    var SUPABASE_ANON_KEY = 'sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp';
+    fetch(SUPABASE_URL + '/rest/v1/privileges_benefits?select=*&order=order.asc', {
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY }
+    })
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        var rows = (data.results || []).sort(function (a, b) {
-          return (a.values.order || 0) - (b.values.order || 0);
-        });
+        var rows = (data || []).map(function (row) { return { values: row }; });
         document.getElementById('priv-benefits-table').innerHTML = build(rows);
       })
       .catch(function () {
@@ -532,14 +535,17 @@
 </script>
 <script>
   (function () {
-    fetch('https://api.hubapi.com/cms/v3/hubdb/tables/2279360248/rows?portalId=43844850&sort=order&limit=100')
+    // [POC] Supabase instead of HubDB's public REST API (api.hubapi.com/cms/v3/hubdb/tables/2279360248)
+    var SUPABASE_URL = 'https://kqgdvpqygepvaifzrxki.supabase.co';
+    var SUPABASE_ANON_KEY = 'sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp';
+    fetch(SUPABASE_URL + '/rest/v1/privileges_products?select=*&order=order.asc', {
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY }
+    })
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        var rows = (data.results || []).sort(function (a, b) {
-          return (a.values.order || 0) - (b.values.order || 0);
-        });
+        var rows = data || [];
         var bodyRows = rows.map(function (row) {
-          var v = row.values;
+          var v = row;
           return '<tr class="priv-row"><td>' + (v.product || '') + '</td>'
             + '<td class="priv-val">' + (v.rc_rate || '') + '</td></tr>';
         }).join('');

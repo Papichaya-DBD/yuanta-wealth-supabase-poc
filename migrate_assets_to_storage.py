@@ -58,6 +58,7 @@ TARGETS = [
     ("blog_general", "id", "thumbnail"),
     ("weekly_pdf", "id", "pdf_url"),
     ("monthly_pdf", "id", "pdf_url"),
+    ("awards", "id", "thumbnail"),
 ]
 
 HEADERS = {

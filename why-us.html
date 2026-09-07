@@ -266,14 +266,17 @@
 <script>
   (function() {
     var fallback = 'images/theme/comingsoon.png';
-    fetch('https://api.hubapi.com/cms/v3/hubdb/tables/2302074604/rows?portalId=43844850&sort=order&limit=100')
+    // [POC] Supabase instead of HubDB's public REST API (api.hubapi.com/cms/v3/hubdb/tables/2302074604)
+    var SUPABASE_URL = 'https://kqgdvpqygepvaifzrxki.supabase.co';
+    var SUPABASE_ANON_KEY = 'sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp';
+    fetch(SUPABASE_URL + '/rest/v1/awards?select=*&order=order.asc', {
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY }
+    })
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        var rows = (data.results || []).sort(function(a, b) {
-          return (a.values.order || 0) - (b.values.order || 0);
-        });
+        var rows = data || [];
         var html = rows.map(function(row) {
-          var v = row.values;
+          var v = row;
           var thumb = (v.thumbnail && v.thumbnail.url) ? v.thumbnail.url : fallback;
           return '<div class="award-item-new">'
             + '<img class="award-thumb" src="' + thumb + '" alt="" />'
