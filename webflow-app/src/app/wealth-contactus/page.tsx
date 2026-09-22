@@ -400,7 +400,6 @@ export default function ContactUsPage() {
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#b8996a" strokeWidth="1.5" style={{ marginBottom: 16 }}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <p style={{ fontFamily: "var(--font-sans)", fontSize: 16, color: "rgba(255,255,255,0.9)", fontWeight: 500, marginBottom: 8 }}>ขอบคุณครับ</p>
                     <p style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "rgba(255,255,255,0.65)" }}>ทีมงานจะติดต่อกลับภายใน 1 วันทำการ</p>
-                    <p style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 16 }}>(PoC) ข้อมูลนี้ถูกบันทึกไว้ใน Supabase ของ sandbox นี้เท่านั้น — ไม่ได้ส่งไปที่ HubSpot จริง</p>
                   </div>
                 )}
               </div>
