@@ -581,7 +581,11 @@ export default function SingleMonthlyBuyListPage() {
 
   // Init: fetch all model rows for the month (?week= or newest)
   useEffect(() => {
-    const week = new URLSearchParams(window.location.search).get("week");
+    let week = new URLSearchParams(window.location.search).get("week");
+    if (!week) {
+      const segs = window.location.pathname.split("/").filter(Boolean);
+      if (segs.length > 1) week = decodeURIComponent(segs[segs.length - 1]);
+    }
 
     function start(w: string) {
       sbFetch("monthly_buy_list", "select=*&week_slug=eq." + encodeURIComponent(w)).then((rows) => {

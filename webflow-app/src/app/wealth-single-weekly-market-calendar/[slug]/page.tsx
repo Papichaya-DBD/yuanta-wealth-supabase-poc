@@ -373,7 +373,11 @@ export default function SingleWeeklyMarketCalendarPage() {
   }, []);
 
   useEffect(() => {
-    const week = new URLSearchParams(location.search).get("week");
+    let week = new URLSearchParams(location.search).get("week");
+    if (!week) {
+      const segs = window.location.pathname.split("/").filter(Boolean);
+      if (segs.length > 1) week = decodeURIComponent(segs[segs.length - 1]);
+    }
     const filter = week ? `&week_slug=eq.${encodeURIComponent(week)}` : "";
     sbFetch("weekly_market_calendar", `select=*&order=week_slug.desc&limit=1${filter}`).then((rows) => {
       if (!rows || !rows.length) {

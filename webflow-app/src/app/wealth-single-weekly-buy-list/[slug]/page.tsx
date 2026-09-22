@@ -610,7 +610,11 @@ export default function SingleBuyListPage() {
   }, []);
 
   useEffect(() => {
-    const weekParam = new URLSearchParams(location.search).get("week");
+    let weekParam = new URLSearchParams(location.search).get("week");
+    if (!weekParam) {
+      const segs = window.location.pathname.split("/").filter(Boolean);
+      if (segs.length > 1) weekParam = decodeURIComponent(segs[segs.length - 1]);
+    }
     function start(week: string) {
       setWeekSlug(week);
       sbFetch("weekly_buy_list", `week_slug=eq.${encodeURIComponent(week)}`).then((rows) => {
