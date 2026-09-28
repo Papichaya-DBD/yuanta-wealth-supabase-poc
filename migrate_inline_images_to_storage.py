@@ -201,7 +201,14 @@ def main():
 
     for table, id_col, columns in TARGETS:
         select = f"{id_col}," + ",".join(columns)
-        rows = api_get(f"/rest/v1/{table}?select={select}")
+        try:
+            rows = api_get(f"/rest/v1/{table}?select={select}")
+        except urllib.error.HTTPError as e:
+            if e.code != 404:
+                raise
+            # table dropped from the project since this list was written -- keep going
+            print(f"\n== {table}: skip, table not found ==")
+            continue
         print(f"\n== {table} ({len(rows)} rows, columns: {', '.join(columns)}) ==")
         for row in rows:
             row_id = row[id_col]

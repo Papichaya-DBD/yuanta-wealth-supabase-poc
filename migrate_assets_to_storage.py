@@ -183,7 +183,14 @@ def main():
     total_rows_updated = 0
 
     for table, id_col, field in TARGETS:
-        rows = api_get(f"/rest/v1/{table}?select={id_col},{field}")
+        try:
+            rows = api_get(f"/rest/v1/{table}?select={id_col},{field}")
+        except urllib.error.HTTPError as e:
+            if e.code != 404:
+                raise
+            # table dropped from the project since this list was written -- keep going
+            print(f"\n== {table}.{field}: skip, table not found ==")
+            continue
         print(f"\n== {table}.{field} ({len(rows)} rows) ==")
         for row in rows:
             row_id = row[id_col]
