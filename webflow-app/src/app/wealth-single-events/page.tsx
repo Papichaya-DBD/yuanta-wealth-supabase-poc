@@ -161,7 +161,7 @@ export default function SingleEventPage() {
           <div className="breadcrumb-bar">
             <div className="container">
               <ol className="breadcrumb">
-                <li className="breadcrumb-item"><a href="/privileges-events">Privileges &amp; events</a></li>
+                <li className="breadcrumb-item"><a href="/wealth-privilegesandevents">Privileges &amp; events</a></li>
                 <li className="breadcrumb-item active" id="f-title-crumb">{event.title || ""}</li>
               </ol>
             </div>
@@ -223,7 +223,7 @@ export default function SingleEventPage() {
               <div className="container">
                 <div className="related-events-header">
                   <h2 className="related-events-title">กิจกรรมอื่นๆ</h2>
-                  <a href="/privileges-events" className="related-see-all">
+                  <a href="/wealth-privilegesandevents" className="related-see-all">
                     ดูทั้งหมด
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#a2603c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </a>
@@ -239,7 +239,7 @@ export default function SingleEventPage() {
         <section id="eventNotFound" style={{ padding: "80px 0", textAlign: "center" }}>
           <div className="container">
             <p style={{ color: "#3d506e", fontSize: 16 }}>ไม่พบกิจกรรมที่ระบุ</p>
-            <a href="/privileges-events" style={{ color: "#a2603c" }}>← กลับไปหน้ากิจกรรม</a>
+            <a href="/wealth-privilegesandevents" style={{ color: "#a2603c" }}>← กลับไปหน้ากิจกรรม</a>
           </div>
         </section>
       )}
@@ -258,12 +258,12 @@ export default function SingleEventPage() {
             <div className="col-12 col-lg-4">
               <div className="footer-nav-wrap">
                 <ul className="footer-nav-links">
-                  <li><a href="/why-us">Why us</a></li>
+                  <li><a href="/wealth-whyus">Why us</a></li>
                   <li><a href="/wealth-insights">Insights</a></li>
                 </ul>
                 <ul className="footer-nav-links">
-                  <li><a href="/privileges-events">Privileges &amp; Events</a></li>
-                  <li><a href="/contact-us">Contact Us</a></li>
+                  <li><a href="/wealth-privilegesandevents">Privileges &amp; Events</a></li>
+                  <li><a href="/wealth-contactus">Contact Us</a></li>
                 </ul>
               </div>
             </div>

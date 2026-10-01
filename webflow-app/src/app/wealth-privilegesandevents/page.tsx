@@ -482,12 +482,12 @@ export default function PrivilegesEventsPage() {
             <div className="col-12 col-lg-4">
               <div className="footer-nav-wrap">
                 <ul className="footer-nav-links">
-                  <li><a href="/why-us">Why us</a></li>
+                  <li><a href="/wealth-whyus">Why us</a></li>
                   <li><a href="/wealth-insights">Insights</a></li>
                 </ul>
                 <ul className="footer-nav-links">
-                  <li><a href="/privileges-events">Privileges &amp; Events</a></li>
-                  <li><a href="/contact-us">Contact Us</a></li>
+                  <li><a href="/wealth-privilegesandevents">Privileges &amp; Events</a></li>
+                  <li><a href="/wealth-contactus">Contact Us</a></li>
                 </ul>
               </div>
             </div>
