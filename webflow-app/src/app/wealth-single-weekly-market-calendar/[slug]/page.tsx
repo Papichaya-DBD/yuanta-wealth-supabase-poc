@@ -6,6 +6,7 @@
 // <script> (which races React hydration — see the home.html port notes).
 
 import { useEffect, useState } from "react";
+import AiDisclaimer from "@/app/_components/AiDisclaimer";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp";
@@ -549,6 +550,7 @@ export default function SingleWeeklyMarketCalendarPage() {
                     </div>
                   </div>
                   <div className="ai-summary-text" id="f-ai-summary" dangerouslySetInnerHTML={{ __html: row?.ai_summary || "" }} />
+                  <AiDisclaimer />
                 </div>
                 <div className="article-content" id="f-body" dangerouslySetInnerHTML={{ __html: row?.body || "" }} />
 

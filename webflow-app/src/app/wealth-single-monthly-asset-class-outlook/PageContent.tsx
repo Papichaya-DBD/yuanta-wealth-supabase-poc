@@ -8,6 +8,7 @@
 // publishable/anon read-only key used by every other PoC page.
 
 import { useEffect, useRef, useState } from "react";
+import AiDisclaimer from "@/app/_components/AiDisclaimer";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp";
@@ -536,6 +537,7 @@ export default function SingleMonthlyAssetClassOutlookPage() {
                   </div>
                 </div>
                 <div className="ai-summary-text" dangerouslySetInnerHTML={{ __html: row?.ai_summary || "" }} />
+                <AiDisclaimer />
               </div>
               <div className="article-content" dangerouslySetInnerHTML={{ __html: row?.body || "" }} />
 

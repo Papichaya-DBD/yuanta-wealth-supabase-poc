@@ -13,6 +13,7 @@
 // ?path=), never from Next's params — same as every other PoC page.
 
 import { useEffect, useState } from "react";
+import AiDisclaimer from "@/app/_components/AiDisclaimer";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp";
@@ -589,6 +590,7 @@ export default function SingleHotIssuePage() {
                     </div>
                   </div>
                   <div className="ai-summary-text" id="f-ai-summary" dangerouslySetInnerHTML={{ __html: row?.ai_summary || "" }} />
+                  <AiDisclaimer />
                 </div>
                 <div className="article-content" id="f-body" dangerouslySetInnerHTML={{ __html: row?.body || "" }} />
 

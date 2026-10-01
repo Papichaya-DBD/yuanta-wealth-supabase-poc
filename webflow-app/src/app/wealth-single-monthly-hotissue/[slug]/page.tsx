@@ -9,6 +9,7 @@
 // async-fetched sections are React state + useEffect, not a raw injected script.
 
 import { useEffect, useRef, useState } from "react";
+import AiDisclaimer from "@/app/_components/AiDisclaimer";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp";
@@ -508,6 +509,7 @@ export default function SingleMonthlyHotIssuePage() {
                   </div>
                 </div>
                 <div className="ai-summary-text" dangerouslySetInnerHTML={{ __html: row?.ai_summary || "" }} />
+                <AiDisclaimer />
               </div>
               <div className="article-content" ref={contentRef} dangerouslySetInnerHTML={{ __html: row?.body || "" }} />
 
