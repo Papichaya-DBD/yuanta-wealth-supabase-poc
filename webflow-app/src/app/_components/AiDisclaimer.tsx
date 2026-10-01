@@ -17,8 +17,9 @@ const CSS = `
   @media (max-width: 767px) { .ai-disclaimer { font-size: 14px; } }
 
   /* desktop: dims the page but stays under the fixed navbar (z-index 1000), as in the design */
-  .disc-backdrop { position: fixed; top: var(--nav-height, 60px); left: 0; right: 0; bottom: 0; z-index: 999; background: rgba(0, 0, 0, 0.35); display: flex; align-items: flex-start; justify-content: center; padding: 16px 24px 24px; }
-  .disc-modal { background: #fff; width: 100%; max-width: 1060px; max-height: calc(100vh - var(--nav-height, 60px) - 40px); display: flex; flex-direction: column; font-family: 'Noto Sans Thai', sans-serif; color: #0C244A; }
+  /* --disc-nav-h is the navbar's real rendered height, measured on open (it varies by viewport) */
+  .disc-backdrop { position: fixed; top: var(--disc-nav-h, 80px); left: 0; right: 0; bottom: 0; z-index: 999; background: rgba(0, 0, 0, 0.35); display: flex; align-items: flex-start; justify-content: center; padding: 24px 24px 24px; }
+  .disc-modal { background: #fff; width: 100%; max-width: 1060px; max-height: calc(100vh - var(--disc-nav-h, 80px) - 48px); display: flex; flex-direction: column; font-family: 'Noto Sans Thai', sans-serif; color: #0C244A; }
   .disc-handle { display: none; }
   .disc-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; border-bottom: 1px solid #E5E7EB; flex-shrink: 0; }
   .disc-title { margin: 0; font-size: 18px; font-weight: 700; color: #0C244A; }
@@ -35,8 +36,8 @@ const CSS = `
     .disc-backdrop { top: 0; z-index: 2000; align-items: flex-end; padding: 0; }
     .disc-modal { max-height: 92vh; border-radius: 16px 16px 0 0; animation: disc-up .25s ease-out; }
     .disc-handle { display: block; width: 36px; height: 4px; border-radius: 2px; background: #D1D5DC; margin: 8px auto 0; flex-shrink: 0; }
-    .disc-header { padding: 12px 16px 14px; border-bottom: 0; }
-    .disc-body { padding: 0 16px 28px; font-size: 14px; line-height: 1.7; }
+    .disc-header { padding: 12px 16px 14px; }
+    .disc-body { padding: 16px 16px 28px; font-size: 14px; line-height: 1.7; }
   }
   @keyframes disc-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
 `;
@@ -46,6 +47,8 @@ export default function AiDisclaimer() {
 
   useEffect(() => {
     if (!open) return;
+    const nav = document.querySelector<HTMLElement>(".navbar");
+    if (nav) document.documentElement.style.setProperty("--disc-nav-h", `${nav.getBoundingClientRect().bottom}px`);
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
