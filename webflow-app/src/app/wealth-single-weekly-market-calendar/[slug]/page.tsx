@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from "react";
 import AiDisclaimer from "@/app/_components/AiDisclaimer";
+import { goToInsights, loadRows } from "@/app/_components/article-load";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp";
@@ -380,11 +381,9 @@ export default function SingleWeeklyMarketCalendarPage() {
       if (segs.length > 1) week = decodeURIComponent(segs[segs.length - 1]);
     }
     const filter = week ? `&week_slug=eq.${encodeURIComponent(week)}` : "";
-    sbFetch("weekly_market_calendar", `select=*&order=week_slug.desc&limit=1${filter}`).then((rows) => {
-      if (!rows || !rows.length) {
-        setNotFound(true);
-        return;
-      }
+    loadRows("weekly_market_calendar", `select=*&order=week_slug.desc&limit=1${filter}`).then((rows) => {
+      if (rows === null) { setNotFound(true); return; }
+      if (!rows.length) { goToInsights(); return; }
       setRow(rows[0]);
     });
   }, []);
@@ -617,7 +616,7 @@ export default function SingleWeeklyMarketCalendarPage() {
       {notFound && (
         <section id="notFoundSection" style={{ padding: "80px 0", textAlign: "center" }}>
           <div className="container">
-            <p style={{ color: "#3d506e", fontSize: 16 }}>ไม่พบบทวิเคราะห์ที่ระบุ</p>
+            <p style={{ color: "#3d506e", fontSize: 16 }}>โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง</p>
             <a href="/wealth-insights" style={{ color: "#a2603c" }}>← กลับไปหน้า Insights</a>
           </div>
         </section>

@@ -55,7 +55,12 @@ export default function MonthlyReportPage() {
   const [countdown, setCountdown] = useState(8);
 
   useEffect(() => {
-    const week = new URLSearchParams(location.search).get("week");
+    // ?week=<date> (what our pages link to) or /<route>/<date> (production's sitemap URLs)
+    let week = new URLSearchParams(location.search).get("week");
+    if (!week) {
+      const segs = location.pathname.split("/").filter(Boolean);
+      if (segs.length > 1) week = decodeURIComponent(segs[segs.length - 1]);
+    }
     if (!week) {
       setView("error");
       return;

@@ -10,6 +10,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import AiDisclaimer from "@/app/_components/AiDisclaimer";
+import { goToInsights, loadRows, LoadErrorNotice } from "@/app/_components/article-load";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp";
@@ -327,6 +328,7 @@ type Row = Record<string, any>;
 
 export default function SingleMonthlyHotIssuePage() {
   const [row, setRow] = useState<Row | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [expertsHtml, setExpertsHtml] = useState<string | null>(null);
   const [relatedHtml, setRelatedHtml] = useState<string | null>(null);
   const [relatedLabel, setRelatedLabel] = useState("");
@@ -377,25 +379,18 @@ export default function SingleMonthlyHotIssuePage() {
       if (segs.length > 1) path = decodeURIComponent(segs[segs.length - 1]);
     }
 
-    function start(r: Row | null) {
-      if (r) { setRow(r); return; }
-      sbFetch("monthly_hot_issue", "select=*&order=page_date.desc&limit=1").then((rows) => {
-        if (rows.length) setRow(rows[0]);
-      });
-    }
-
-    if (path) {
-      sbFetch("monthly_hot_issue", "select=*&path=eq." + encodeURIComponent(path)).then((rows) => {
-        start(rows.length ? rows[0] : null);
-      });
-    } else {
-      start(null);
-    }
+    // Unknown or missing path -> Insights, like production; a failed request shows a retry notice.
+    if (!path) { goToInsights(); return; }
+    loadRows("monthly_hot_issue", "select=*&path=eq." + encodeURIComponent(path)).then((rows) => {
+      if (rows === null) { setLoadError(true); return; }
+      if (!rows.length) { goToInsights(); return; }
+      setRow(rows[0]);
+    });
   }, []);
 
   useEffect(() => {
     if (!row) return;
-    document.title = (row.main_title || "Hot Issue") + " — Supabase PoC";
+    document.title = (row.main_title || "Hot Issue");
     wrapTableScroll(contentRef.current);
 
     Promise.all(
@@ -436,6 +431,7 @@ export default function SingleMonthlyHotIssuePage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
+      <LoadErrorNotice show={loadError} />
 
       <nav className="navbar navbar-expand-lg">
         <div className="container">

@@ -9,6 +9,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import AiDisclaimer from "@/app/_components/AiDisclaimer";
+import { goToInsights, loadRows, LoadErrorNotice } from "@/app/_components/article-load";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp";
@@ -270,6 +271,7 @@ const CSS = `
 
 export default function SingleMonthlyAssetClassOutlookPage() {
   const [row, setRow] = useState<Record<string, any> | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [experts, setExperts] = useState<string | null>(null);
   const [relatedHtml, setRelatedHtml] = useState<string | null>(null);
   const [relatedMonthLabel, setRelatedMonthLabel] = useState("");
@@ -331,29 +333,19 @@ export default function SingleMonthlyAssetClassOutlookPage() {
       if (segs.length > 1) path = decodeURIComponent(segs[segs.length - 1]);
     }
 
-    function start(r: Record<string, any> | null) {
-      if (r) {
-        setRow(r);
-        return;
-      }
-      sbFetch("monthly_asset_class_outlook", "select=*&order=page_date.desc&limit=1").then((rows) => {
-        if (rows.length) setRow(rows[0]);
-      });
-    }
-
-    if (path) {
-      sbFetch("monthly_asset_class_outlook", "select=*&path=eq." + encodeURIComponent(path)).then((rows) => {
-        start(rows.length ? rows[0] : null);
-      });
-    } else {
-      start(null);
-    }
+    // Unknown or missing path -> Insights, like production; a failed request shows a retry notice.
+    if (!path) { goToInsights(); return; }
+    loadRows("monthly_asset_class_outlook", "select=*&path=eq." + encodeURIComponent(path)).then((rows) => {
+      if (rows === null) { setLoadError(true); return; }
+      if (!rows.length) { goToInsights(); return; }
+      setRow(rows[0]);
+    });
   }, []);
 
   useEffect(() => {
     if (!row) return;
     currentWeekRef.current = row.week_slug;
-    document.title = (row.main_title || "Asset Class Outlook") + " — Supabase PoC";
+    document.title = (row.main_title || "Asset Class Outlook");
 
     Promise.all(
       RELATED_TABLES.map((t) => {
@@ -464,6 +456,7 @@ export default function SingleMonthlyAssetClassOutlookPage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
+      <LoadErrorNotice show={loadError} />
 
       <nav className="navbar navbar-expand-lg">
         <div className="container">

@@ -10,6 +10,7 @@
 // read-only key used by every other PoC page.
 
 import { useEffect, useRef, useState } from "react";
+import { goToInsights, loadRows, LoadErrorNotice } from "@/app/_components/article-load";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp";
@@ -530,6 +531,7 @@ const TAB_LABELS: Record<string, string> = { defender: "Defender (30/70)", flexi
 
 export default function SingleMonthlyBuyListPage() {
   const [models, setModels] = useState<Record<string, any>>({});
+  const [loadError, setLoadError] = useState(false);
   const [activeModel, setActiveModel] = useState("defender");
   const [experts, setExperts] = useState<string | null>(null);
   const [relatedHtml, setRelatedHtml] = useState<string | null>(null);
@@ -588,8 +590,9 @@ export default function SingleMonthlyBuyListPage() {
     }
 
     function start(w: string) {
-      sbFetch("monthly_buy_list", "select=*&week_slug=eq." + encodeURIComponent(w)).then((rows) => {
-        if (!rows.length) return;
+      loadRows("monthly_buy_list", "select=*&week_slug=eq." + encodeURIComponent(w)).then((rows) => {
+        if (rows === null) { setLoadError(true); return; }
+        if (!rows.length) { goToInsights(); return; }
         const m: Record<string, any> = {};
         rows.forEach((v) => {
           m[v.model || "defender"] = v;
@@ -600,13 +603,9 @@ export default function SingleMonthlyBuyListPage() {
       });
     }
 
-    if (week && /^\d{4}-\d{2}-\d{2}$/.test(week)) {
-      start(week);
-    } else {
-      sbFetch("monthly_buy_list", "select=week_slug&order=week_slug.desc&limit=1").then((rows) => {
-        if (rows.length) start(rows[0].week_slug);
-      });
-    }
+    // Unknown or missing week -> Insights, like production
+    if (week && /^\d{4}-\d{2}-\d{2}$/.test(week)) start(week);
+    else goToInsights();
   }, []);
 
   // Render the active model's data into the DOM shells (post-hydration, safe)
@@ -701,6 +700,7 @@ export default function SingleMonthlyBuyListPage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
+      <LoadErrorNotice show={loadError} />
 
       <nav className="navbar navbar-expand-lg">
         <div className="container">

@@ -23,13 +23,47 @@ const LEGACY_REDIRECTS: [string, string][] = [
   ["/contact-us", "/wealth-contactus"],
 ];
 
+// Article routes with no slug (production lists them in its sitemap). Same rule as
+// an unknown slug: send the reader to Insights. Temporary, since these may get a
+// real listing page later.
+const BARE_ARTICLE_ROUTES = [
+  "weekly-hotissue",
+  "weekly-asset-performance",
+  "weekly-buy-list",
+  "weekly-market-calendar",
+  "monthly-hotissue",
+  "monthly-asset-class-outlook",
+  "monthly-asset-performance",
+  "monthly-buy-list",
+  "monthly-market-calendar",
+  "monthly-market-outlook",
+].map((r) => `/wealth-single-${r}`);
+
+// Production's internal preview pages are public and in its sitemap; each preview
+// article 301s to the same article's real page (an unknown slug then falls through
+// to Insights), and the preview listings go to Insights.
+const PREVIEW_ARTICLE_ROUTES: [string, string][] = [
+  ["/wealth-hotissue-preview", "/wealth-single-weekly-hotissue"],
+  ["/wealth-single-monthly-hotissue-preview", "/wealth-single-monthly-hotissue"],
+  ["/wealth-single-monthly-asset-class-outlook-preview", "/wealth-single-monthly-asset-class-outlook"],
+];
+const PREVIEW_LISTINGS = ["/wealth-insights-preview", "/wealth-insight-perview-2"];
+
 const nextConfig: NextConfig = {
   ...(basePath && {
     basePath,
     assetPrefix: process.env.ASSETS_PREFIX || basePath,
   }),
   async redirects() {
-    return LEGACY_REDIRECTS.map(([source, destination]) => ({ source, destination, statusCode: 301 }));
+    return [
+      ...LEGACY_REDIRECTS.map(([source, destination]) => ({ source, destination, statusCode: 301 as const })),
+      ...PREVIEW_ARTICLE_ROUTES.flatMap(([preview, real]) => [
+        { source: `${preview}/:slug`, destination: `${real}/:slug`, statusCode: 301 as const },
+        { source: preview, destination: "/wealth-insights", statusCode: 301 as const },
+      ]),
+      ...PREVIEW_LISTINGS.map((source) => ({ source, destination: "/wealth-insights", statusCode: 301 as const })),
+      ...BARE_ARTICLE_ROUTES.map((source) => ({ source, destination: "/wealth-insights", statusCode: 302 as const })),
+    ];
   },
 };
 

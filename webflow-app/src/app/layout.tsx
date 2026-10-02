@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
+import { SITE_TITLE, SITE_URL } from "./_components/seo";
 
 const ANALYTICS_HOST = "wealth.yuanta.co.th";
 const GA4_ID = "G-FGQHP67CNS";
 const GTM_ID = "GTM-TB9V4FG5";
 
+// Defaults only; every route sets its own title + canonical (see _components/seo.ts).
 export const metadata: Metadata = {
-  title: "Yuanta Wealth",
-  description: "Yuanta Wealth on Webflow Cloud (Supabase-backed PoC)",
+  metadataBase: new URL(SITE_URL),
+  title: SITE_TITLE,
+  openGraph: { title: SITE_TITLE, images: ["/images/og.jpg"] },
 };
 
 export default function RootLayout({

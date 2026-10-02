@@ -12,6 +12,7 @@
 // hydration risk there.
 
 import { useEffect, useState } from "react";
+import { goToInsights, loadRows, LoadErrorNotice } from "@/app/_components/article-load";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp";
@@ -575,6 +576,7 @@ const CSS = `
 
 export default function SingleBuyListPage() {
   const [models, setModels] = useState<Record<string, any>>({});
+  const [loadError, setLoadError] = useState(false);
   const [activeModel, setActiveModel] = useState("defender");
   const [weekSlug, setWeekSlug] = useState("");
   const [relatedHtml, setRelatedHtml] = useState<string | null>(null);
@@ -617,21 +619,18 @@ export default function SingleBuyListPage() {
     }
     function start(week: string) {
       setWeekSlug(week);
-      sbFetch("weekly_buy_list", `week_slug=eq.${encodeURIComponent(week)}`).then((rows) => {
-        if (!rows.length) return;
+      loadRows("weekly_buy_list", `week_slug=eq.${encodeURIComponent(week)}`).then((rows) => {
+        if (rows === null) { setLoadError(true); return; }
+        if (!rows.length) { goToInsights(); return; }
         const m: Record<string, any> = {};
         rows.forEach((row) => { m[row.model || "defender"] = row; });
         setModels(m);
         setActiveModel((prev) => (m[prev] ? prev : Object.keys(m)[0]));
       });
     }
-    if (/^\d{4}-\d{2}-\d{2}$/.test(weekParam || "")) {
-      start(weekParam as string);
-    } else {
-      sbFetch("weekly_buy_list", "select=week_slug&order=week_slug.desc&limit=1").then((rows) => {
-        if (rows.length) start(rows[0].week_slug);
-      });
-    }
+    // Unknown or missing week -> Insights, like production
+    if (/^\d{4}-\d{2}-\d{2}$/.test(weekParam || "")) start(weekParam as string);
+    else goToInsights();
   }, []);
 
   useEffect(() => {
@@ -756,6 +755,7 @@ export default function SingleBuyListPage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
+      <LoadErrorNotice show={loadError} />
 
       <nav className="navbar navbar-expand-lg">
         <div className="container">
