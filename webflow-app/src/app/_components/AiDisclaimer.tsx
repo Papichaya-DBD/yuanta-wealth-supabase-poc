@@ -7,6 +7,10 @@
 import { useEffect, useState } from "react";
 import { DISCLAIMER_BLOCKS, DISCLAIMER_TITLE } from "./disclaimer-content";
 
+// 2026-10-02: temporarily hidden on every page per user request. Component,
+// content and all 8 page usages are left in place -- flip back to true to show it.
+const DISCLAIMER_ENABLED = false;
+
 const SHORT_TEXT =
   'ข้อมูล บทวิเคราะห์ มุมมองการจัดสรรการลงทุน (Asset Allocation) และแบบจำลองพอร์ตการลงทุน (Model Portfolio) ที่บริษัทหลักทรัพย์ หยวนต้า (ประเทศไทย) จำกัด ("บริษัทฯ") จัดทำหรือเผยแพร่ผ่านเอกสาร เว็บไซต์ หรือช่องทางสื่อสารของบริษัทฯ จัดทำขึ้นเพื่อเป็นข้อมูลทั่วไปและประกอบการตัดสินใจลงทุนในภาพรวม มิใช่คำแนะนำการลงทุนเฉพาะบุคคล';
 
@@ -58,6 +62,8 @@ export default function AiDisclaimer() {
       document.removeEventListener("keydown", onKey);
     };
   }, [open]);
+
+  if (!DISCLAIMER_ENABLED) return null;
 
   return (
     <>
