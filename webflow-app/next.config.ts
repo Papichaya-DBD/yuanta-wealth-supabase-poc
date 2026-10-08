@@ -60,12 +60,10 @@ const nextConfig: NextConfig = {
     sri: { algorithm: "sha256" },
     inlineCss: true,
   },
-  // Keep /_next on the page's own origin instead of Webflow Cloud's asset host: React
-  // can't add SRI to client-component chunks, so same-origin is the only way those
-  // pass the external SRI scan. Both hosts serve the same /_next files. An empty
-  // prefix gets replaced by Webflow's build, so production builds name the origin.
-  assetPrefix: process.env.NODE_ENV === "production" ? `https://wealth.yuanta.co.th${basePath}` : basePath,
-  ...(basePath && { basePath }),
+  ...(basePath && {
+    basePath,
+    assetPrefix: process.env.ASSETS_PREFIX || basePath,
+  }),
   async redirects() {
     return [
       ...LEGACY_REDIRECTS.map(([source, destination]) => ({ source, destination, statusCode: 301 as const })),
