@@ -103,7 +103,6 @@ export default function WeeklyReportPage() {
 
   return (
     <>
-      <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet" />
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
       {view === "loading" && (

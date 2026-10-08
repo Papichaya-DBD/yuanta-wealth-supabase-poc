@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import "./fonts.css";
 import "./globals.css";
 import { SITE_TITLE, SITE_URL } from "./_components/seo";
 
@@ -22,12 +23,6 @@ export default function RootLayout({
   return (
     <html lang="th">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap"
-          rel="stylesheet"
-        />
         <link rel="stylesheet" href="/vendor/template_bootstrap.min.css" />
         <link rel="stylesheet" href="/vendor/template_swiper-bundle.min.css" />
         <link rel="stylesheet" href="/vendor/template_main.min.css" />
@@ -37,7 +32,7 @@ export default function RootLayout({
           collapse) — required in the root layout for that guarantee.
         */}
         <Script
-          src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"
+          src="/vendor/template_swiper-bundle.min.js"
           strategy="beforeInteractive"
         />
         <Script src="/vendor/template_bootstrap.bundle.min.js" strategy="beforeInteractive" />

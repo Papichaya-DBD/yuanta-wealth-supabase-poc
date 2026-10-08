@@ -50,6 +50,13 @@ const PREVIEW_ARTICLE_ROUTES: [string, string][] = [
 const PREVIEW_LISTINGS = ["/wealth-insights-preview", "/wealth-insight-perview-2"];
 
 const nextConfig: NextConfig = {
+  // Webflow Cloud serves /_next assets from its own *.webflow.services origin, which
+  // external scanners flag as cross-origin resources without SRI. sri adds integrity
+  // hashes to the script tags; inlineCss drops the cross-origin stylesheet link.
+  experimental: {
+    sri: { algorithm: "sha256" },
+    inlineCss: true,
+  },
   ...(basePath && {
     basePath,
     assetPrefix: process.env.ASSETS_PREFIX || basePath,
