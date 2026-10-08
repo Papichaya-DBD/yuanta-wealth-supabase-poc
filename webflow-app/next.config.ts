@@ -53,6 +53,9 @@ const nextConfig: NextConfig = {
   // Webflow Cloud serves /_next assets from its own *.webflow.services origin, which
   // external scanners flag as cross-origin resources without SRI. sri adds integrity
   // hashes to the script tags; inlineCss drops the cross-origin stylesheet link.
+  // Required with sri: browsers block a cross-origin script carrying integrity unless it
+  // is fetched in CORS mode (the asset host answers with Access-Control-Allow-Origin: *).
+  crossOrigin: "anonymous",
   experimental: {
     sri: { algorithm: "sha256" },
     inlineCss: true,
