@@ -57,10 +57,11 @@ const nextConfig: NextConfig = {
     sri: { algorithm: "sha256" },
     inlineCss: true,
   },
-  ...(basePath && {
-    basePath,
-    assetPrefix: process.env.ASSETS_PREFIX || basePath,
-  }),
+  // Keep /_next on the page's own origin instead of Webflow Cloud's asset host: React
+  // can't add SRI to client-component chunks, so same-origin is the only way those
+  // pass the external SRI scan. Both hosts serve the same /_next files.
+  assetPrefix: basePath,
+  ...(basePath && { basePath }),
   async redirects() {
     return [
       ...LEGACY_REDIRECTS.map(([source, destination]) => ({ source, destination, statusCode: 301 as const })),
