@@ -49,7 +49,7 @@ function closeMeetingModal() {
 }
 
 // ── Home Insights (weekly) ──────────────────────────────────────────────
-type WeeklyTable = { id: string; type: string; label: string; cls: string; path: string };
+type WeeklyTable = { id: string; type: string; label: string; cls: string; path: string; monthly?: boolean };
 type Article = { values: Record<string, any>; path?: string; _table: WeeklyTable };
 
 const HOME_FALLBACK_IMG = "/images/theme/comingsoon.png";
@@ -58,6 +58,12 @@ const THUMB: Record<string, string> = {
   weekly_asset_performance: "/images/theme/thumb-asset-performance.png",
   weekly_buy_list: "/images/theme/thumb-buy-list.png",
   weekly_market_calendar: "/images/theme/thumb-market-calendar.png",
+  monthly_hot_issue: "/images/theme/thumb-hot-issue.png",
+  monthly_asset_performance: "/images/theme/thumb-asset-performance.png",
+  monthly_buy_list: "/images/theme/thumb-buy-list.png",
+  monthly_market_calendar: "/images/theme/thumb-market-calendar.png",
+  monthly_market_outlook: "/images/theme/thumb-market-outlook.png",
+  monthly_asset_class_outlook: "/images/theme/thumb-asset-class-outlook.png",
 };
 const WEEKLY_TABLES: WeeklyTable[] = [
   { id: "weekly_hot_issue", type: "hot-issue", label: "Hot issue", cls: "tag-hot-issue", path: "/wealth-single-weekly-hotissue/" },
@@ -65,6 +71,21 @@ const WEEKLY_TABLES: WeeklyTable[] = [
   { id: "weekly_buy_list", type: "buy-list", label: "Buy list", cls: "tag-buy-list", path: "/wealth-single-weekly-buy-list/" },
   { id: "weekly_market_calendar", type: "market-calendar", label: "Market calendar", cls: "tag-mkt-calendar", path: "/wealth-single-weekly-market-calendar/" },
 ];
+// Home shows whichever issue is newest, weekly or monthly (same tables as Insights).
+const MONTHLY_TABLES: WeeklyTable[] = [
+  { id: "monthly_hot_issue", type: "hot-issue", label: "Hot issue", cls: "tag-hot-issue", path: "/wealth-single-monthly-hotissue/", monthly: true },
+  { id: "monthly_asset_performance", type: "asset-performance", label: "Asset performance", cls: "tag-asset-perf", path: "/wealth-single-monthly-asset-performance/", monthly: true },
+  { id: "monthly_buy_list", type: "buy-list", label: "Buy list", cls: "tag-buy-list", path: "/wealth-single-monthly-buy-list/", monthly: true },
+  { id: "monthly_market_calendar", type: "market-calendar", label: "Market calendar", cls: "tag-mkt-calendar", path: "/wealth-single-monthly-market-calendar/", monthly: true },
+  { id: "monthly_market_outlook", type: "market-outlook", label: "Market outlook", cls: "tag-mkt-outlook", path: "/wealth-single-monthly-market-outlook/", monthly: true },
+  { id: "monthly_asset_class_outlook", type: "asset-class-outlook", label: "Asset class outlook", cls: "tag-asset-outlook", path: "/wealth-single-monthly-asset-class-outlook/", monthly: true },
+];
+// Several topic rows share one week_slug in these tables; each row is its own article.
+const SPLIT_TABLE_IDS: Record<string, boolean> = {
+  weekly_hot_issue: true,
+  monthly_hot_issue: true,
+  monthly_asset_class_outlook: true,
+};
 const SVG_ARROW = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const SVG_PREV = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>';
 const SVG_NEXT = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>';
@@ -97,11 +118,17 @@ function thaiDateRange(articles: Article[]) {
   }
   return dS.getUTCDate() + " " + THAI_MONTHS[dS.getUTCMonth()] + "–" + dE.getUTCDate() + " " + THAI_MONTHS[dE.getUTCMonth()] + " " + y;
 }
+const THAI_MONTHS_FULL = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+function thaiMonthLabel(articles: Article[]) {
+  const d = parseDate((articles[0] && articles[0].values.week_slug) || "");
+  if (!d) return "";
+  return THAI_MONTHS_FULL[d.getUTCMonth()] + " " + (d.getUTCFullYear() + 543);
+}
 function imgUrl(a: Article) {
   return (a._table && THUMB[a._table.id]) || HOME_FALLBACK_IMG;
 }
 function articleUrl(a: Article) {
-  const slug = a.path || a.values.week_slug || "";
+  const slug = SPLIT_TABLE_IDS[a._table.id] ? a.path || a.values.week_slug || "" : a.values.week_slug || a.path || "";
   return a._table.path + slug;
 }
 function mobileCardHtml(a: Article) {
@@ -120,7 +147,7 @@ function mobileCardHtml(a: Article) {
   );
 }
 
-function buildHomeWeekHtml(articles: Article[]): string {
+function buildHomeWeekHtml(articles: Article[], isMonthly: boolean): string {
   const sorted = articles.slice().sort((a, b) => (b.values.page_date || "").localeCompare(a.values.page_date || ""));
   const feat = sorted[0];
   const ft = feat._table;
@@ -150,8 +177,10 @@ function buildHomeWeekHtml(articles: Article[]): string {
   const headerHtml =
     '<div class="home-week-header">' +
     '<div class="home-week-section-left">' +
-    '<span class="home-week-chip">Weekly</span>' +
-    `<span class="home-week-label">${thaiDateRange(articles)}</span>` +
+    (isMonthly
+      ? '<span class="home-week-chip home-week-chip-monthly">Monthly</span>' +
+        `<span class="home-week-label">${thaiMonthLabel(articles)}</span>`
+      : '<span class="home-week-chip">Weekly</span>' + `<span class="home-week-label">${thaiDateRange(articles)}</span>`) +
     "</div></div>";
 
   return (
@@ -220,6 +249,8 @@ const CSS = `
     .tag-buy-list      { background: #EEF1F0; color: #2c4a42; border: 1px solid #CBD4D0; }
     .tag-asset-perf    { background: #F8F4ED; color: #92600a; border: 1px solid #E9DEC7; }
     .tag-mkt-calendar  { background: #E7E9ED; color: #0c244a; border: 1px solid #B4BBC7; }
+    .tag-asset-outlook { background: #F2F0EE; color: #3d2c1e; border: 1px solid #D6D1CB; }
+    .tag-mkt-outlook   { background: #F0EFF5; color: #3d2260; border: 1px solid #D1CCDF; }
 
     /* ── Week header ── */
     .home-week-header {
@@ -244,6 +275,7 @@ const CSS = `
       padding: 3px 10px;
       white-space: nowrap;
     }
+    .home-week-chip-monthly { background: #0C244A; }
     .home-week-label {
       font-family: 'Noto Sans Thai', sans-serif;
       font-size: 20px;
@@ -592,10 +624,10 @@ export default function HomePage() {
     }
   }, []);
 
-  // Fetch latest weekly insights from Supabase
+  // Fetch the latest issue from Supabase, weekly or monthly, whichever is newer
   useEffect(() => {
     Promise.all(
-      WEEKLY_TABLES.map((t) =>
+      [...WEEKLY_TABLES, ...MONTHLY_TABLES].map((t) =>
         sbFetch(t.id, "select=*&order=page_date.desc&limit=20").then((rows) =>
           (rows || []).map((row) => ({ values: row, path: row.path, _table: t }) as Article)
         )
@@ -608,28 +640,31 @@ export default function HomePage() {
           return;
         }
 
-        const SPLIT_TABLE_IDS: Record<string, boolean> = { weekly_hot_issue: true };
-        const seenPerType: Record<string, boolean> = {};
+        // One article per table+period (per row for split tables), same rule as Insights
+        const seen: Record<string, boolean> = {};
         allArticles = allArticles.filter((a) => {
-          const type = a._table.type;
-          if (type !== "buy-list" && type !== "hot-issue") return true;
-          const slug = a.values.week_slug || a.path || "";
-          const key = SPLIT_TABLE_IDS[a._table.id] ? `row|${a._table.id}|${a.values.id || a.path}` : `${type}|${slug}`;
-          if (seenPerType[key]) return false;
-          seenPerType[key] = true;
+          const t = a._table;
+          const key = t.id + "|" + (SPLIT_TABLE_IDS[t.id] ? a.path || a.values.id || "" : a.values.week_slug || a.path || "");
+          if (seen[key]) return false;
+          seen[key] = true;
           return true;
         });
 
-        const weekMap: Record<string, Article[]> = {};
+        // Group by issue (kind + period) so a weekly and a monthly sharing a date never merge
+        const issueMap: Record<string, { slug: string; monthly: boolean; articles: Article[] }> = {};
         allArticles.forEach((a) => {
           const slug = a.values.week_slug || a.path || "";
-          if (slug) {
-            if (!weekMap[slug]) weekMap[slug] = [];
-            weekMap[slug].push(a);
-          }
+          if (!slug) return;
+          const monthly = !!a._table.monthly;
+          const key = (monthly ? "m|" : "w|") + slug;
+          if (!issueMap[key]) issueMap[key] = { slug, monthly, articles: [] };
+          issueMap[key].articles.push(a);
         });
-        const slugs = Object.keys(weekMap).sort().reverse();
-        if (slugs.length) setHomeWeekHtml(buildHomeWeekHtml(weekMap[slugs[0]]));
+        // Newest period first; on the same date the monthly issue wins
+        const issues = Object.values(issueMap).sort(
+          (x, y) => y.slug.localeCompare(x.slug) || Number(y.monthly) - Number(x.monthly)
+        );
+        if (issues.length) setHomeWeekHtml(buildHomeWeekHtml(issues[0].articles, issues[0].monthly));
         setHomeLoaded(true);
       })
       .catch(() => setHomeLoaded(true));
