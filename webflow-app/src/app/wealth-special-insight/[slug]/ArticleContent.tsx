@@ -3,7 +3,7 @@
 // Special Insight article: a copy of the monthly asset class outlook page
 // (wealth-single-monthly-asset-class-outlook/PageContent.tsx) reading the
 // special_insight table instead. Row identity is `path`; asset_type picks the
-// category tag. The related section still shows that month's monthly issue.
+// category tag. No related-articles section (removed on request).
 
 import { useEffect, useRef, useState } from "react";
 import AiDisclaimer from "@/app/_components/AiDisclaimer";
@@ -43,44 +43,8 @@ function thaiDateM(dateStr?: string) {
   const m = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
   return d.getUTCDate() + " " + m[d.getUTCMonth()] + " " + (d.getUTCFullYear() + 543);
 }
-const THAI_MONTHS_FULL = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
 type RelatedTable = { id: string; label: string; cls: string; path: string; usePath?: boolean; multi?: boolean; excludeSelf?: boolean };
-
-const RELATED_TABLES: RelatedTable[] = [
-  { id: "monthly_asset_class_outlook", label: "Asset class outlook", cls: "tag-asset-outlook", path: "/wealth-single-monthly-asset-class-outlook/", usePath: true, multi: true, excludeSelf: true },
-  { id: "monthly_hot_issue", label: "Hot issue", cls: "tag-hot-issue", path: "/wealth-single-monthly-hotissue/", usePath: true, multi: true },
-  { id: "monthly_asset_performance", label: "Asset performance", cls: "tag-asset-perf", path: "/wealth-single-monthly-asset-performance/" },
-  { id: "monthly_market_outlook", label: "Market outlook", cls: "tag-mkt-outlook", path: "/wealth-single-monthly-market-outlook/" },
-  { id: "monthly_market_calendar", label: "Market calendar", cls: "tag-mkt-calendar", path: "/wealth-single-monthly-market-calendar/" },
-  { id: "monthly_buy_list", label: "Buy list", cls: "tag-buy-list", path: "/wealth-single-monthly-buy-list/" },
-];
-const THUMB_MONTHLY: Record<string, string> = {
-  monthly_asset_class_outlook: "/images/theme/thumb-asset-class-outlook.png",
-  monthly_hot_issue: "/images/theme/thumb-hot-issue.png",
-  monthly_asset_performance: "/images/theme/thumb-asset-performance.png",
-  monthly_market_outlook: "/images/theme/thumb-market-outlook.png",
-  monthly_market_calendar: "/images/theme/thumb-market-calendar.png",
-  monthly_buy_list: "/images/theme/thumb-buy-list.png",
-};
-
-function relatedCardHtml(t: RelatedTable, row: Record<string, any>) {
-  const src = THUMB_MONTHLY[t.id];
-  const slugPart = t.usePath ? row.path || "" : (row.week_slug || "").trim();
-  const url = t.path + slugPart;
-  const excerpt = row.description || stripHtml(row.ai_summary);
-  return (
-    '<div class="swiper-slide">' +
-    `<div class="insight-card" onclick="location.href='${url}'">` +
-    `<div class="insight-card-img-wrap"><img class="insight-card-img" src="${src}" alt="" /></div>` +
-    '<div class="insight-card-content">' +
-    `<span class="insight-card-img-tag insight-tag ${t.cls}">${t.label}</span>` +
-    `<h4 class="insight-card-title">${row.main_title || ""}</h4>` +
-    `<p class="insight-card-date">${thaiDateM(row.page_date)}</p>` +
-    (excerpt ? `<p class="insight-card-excerpt">${excerpt}</p>` : "") +
-    "</div></div></div>"
-  );
-}
 
 function openMeetingModal() {
   const modal = document.getElementById("meeting-modal");
@@ -276,8 +240,6 @@ export default function SpecialInsightArticle() {
   const [row, setRow] = useState<Record<string, any> | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [experts, setExperts] = useState<string | null>(null);
-  const [relatedHtml, setRelatedHtml] = useState<string | null>(null);
-  const [relatedMonthLabel, setRelatedMonthLabel] = useState("");
   const currentWeekRef = useRef("");
   const [weekModalHtml, setWeekModalHtml] = useState<string>("");
   const [weekModalOpen, setWeekModalOpen] = useState(false);
@@ -349,26 +311,9 @@ export default function SpecialInsightArticle() {
     if (!row) return;
     currentWeekRef.current = row.week_slug;
     document.title = (row.main_title || "Special Insight");
-
-    Promise.all(
-      RELATED_TABLES.map((t) => {
-        const limit = t.multi ? 50 : 1;
-        return sbFetch(t.id, "select=*&week_slug=eq." + encodeURIComponent(row.week_slug) + "&limit=" + limit).then((rows) => {
-          const filtered = t.excludeSelf ? rows.filter((r) => r.path !== row.path) : rows;
-          return filtered.map((r) => relatedCardHtml(t, r));
-        });
-      })
-    ).then((results) => {
-      const cards = ([] as string[]).concat(...results);
-      if (!cards.length) return;
-      const y = parseInt(row.week_slug.slice(0, 4), 10) + 543;
-      const m = parseInt(row.week_slug.slice(5, 7), 10);
-      setRelatedMonthLabel(THAI_MONTHS_FULL[m] + " " + y);
-      setRelatedHtml(cards.join(""));
-    });
   }, [row]);
 
-  // Table style tweaks + Swiper init, run after content committed to the DOM
+  // Table style tweaks, run after content committed to the DOM
   useEffect(() => {
     if (!row) return;
     document.querySelectorAll("#articleContent table").forEach((tbl) => {
@@ -383,23 +328,6 @@ export default function SpecialInsightArticle() {
       el.querySelectorAll("td").forEach((c) => ((c as HTMLElement).style.padding = "10px"));
     });
   }, [row]);
-
-  useEffect(() => {
-    if (!relatedHtml) return;
-    const SwiperCtor = (window as any).Swiper;
-    if (!SwiperCtor) return;
-    new SwiperCtor(".weekly-related-swiper", {
-      slidesPerView: 4,
-      spaceBetween: 16,
-      watchOverflow: false,
-      navigation: { prevEl: ".weekly-prev", nextEl: ".weekly-next", disabledClass: "swiper-button-disabled" },
-      breakpoints: {
-        0: { enabled: false },
-        768: { enabled: false },
-        992: { enabled: true, slidesPerView: 4, spaceBetween: 16 },
-      },
-    });
-  }, [relatedHtml]);
 
   const WEEKLY_THUMB: Record<string, string> = {
     weekly_hot_issue: "/images/theme/thumb-hot-issue.png",
@@ -569,25 +497,6 @@ export default function SpecialInsightArticle() {
                 </button>
               </div>
 
-              {relatedHtml && (
-                <div className="related-section">
-                  <div className="container">
-                    <div className="col-12 col-lg-9 mx-auto">
-                      <div className="related-week-header-row">
-                        <span className="related-week-chip related-week-chip-monthly">Monthly</span>
-                        <span className="related-week-label">{relatedMonthLabel}</span>
-                      </div>
-                      <div className="weekly-related-wrapper">
-                        <div className="swiper weekly-related-swiper">
-                          <div className="swiper-wrapper" dangerouslySetInnerHTML={{ __html: relatedHtml }} />
-                        </div>
-                        <div className="swiper-button-prev weekly-prev"></div>
-                        <div className="swiper-button-next weekly-next"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </section>
