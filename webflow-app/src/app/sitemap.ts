@@ -6,7 +6,7 @@ import { sbServerRows, SITE_URL } from "./_components/seo";
 
 export const dynamic = "force-dynamic";
 
-const SITE_PAGES = ["/", "/wealth-insights", "/wealth-whyus", "/wealth-privilegesandevents", "/wealth-contactus"];
+const SITE_PAGES = ["/", "/wealth-insights", "/wealth-whyus", "/wealth-privilegesandevents", "/wealth-contactus", "/wealth-special-insight"];
 
 const ARTICLES: [route: string, table: string, key: "path" | "week_slug"][] = [
   ["/wealth-single-weekly-hotissue", "weekly_hot_issue", "path"],
@@ -20,6 +20,7 @@ const ARTICLES: [route: string, table: string, key: "path" | "week_slug"][] = [
   ["/wealth-single-monthly-market-calendar", "monthly_market_calendar", "week_slug"],
   ["/wealth-single-monthly-market-outlook", "monthly_market_outlook", "week_slug"],
   ["/wealth-weekly-report", "weekly_pdf", "week_slug"],
+  ["/wealth-special-insight", "special_insight", "path"],
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

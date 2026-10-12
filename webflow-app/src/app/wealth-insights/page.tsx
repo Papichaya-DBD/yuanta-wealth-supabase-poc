@@ -581,6 +581,7 @@ export default function InsightsPage() {
                 <a href="/wealth-whyus" data-nav-match="/wealth-whyus">Why us</a>
                 <a href="/wealth-privilegesandevents" data-nav-match="/wealth-privileges">Privileges &amp; events</a>
                 <a href="/wealth-insights" data-nav-match="/wealth-insights">Insights</a>
+                <a href="/wealth-special-insight" data-nav-match="/wealth-special-insight">Special Insight</a>
                 <a href="/wealth-contactus" data-nav-match="/wealth-contact">Contact us</a>
               </nav>
               <a href="#" className="btn-book-meeting" onClick={(e) => { e.preventDefault(); openMeetingModal(); }}>Book a meeting</a>
@@ -686,6 +687,7 @@ export default function InsightsPage() {
                 <ul className="footer-nav-links">
                   <li><a href="/wealth-whyus">Why us</a></li>
                   <li><a href="/wealth-insights">Insights</a></li>
+                  <li><a href="/wealth-special-insight">Special Insight</a></li>
                 </ul>
                 <ul className="footer-nav-links">
                   <li><a href="/wealth-privilegesandevents">Privileges &amp; Events</a></li>

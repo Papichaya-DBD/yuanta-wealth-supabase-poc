@@ -17,6 +17,7 @@
 // rendering avoids that entirely.
 
 import { useEffect, useState } from "react";
+import { assetTypeLabel, SPECIAL_INSIGHT_THUMB } from "./wealth-special-insight/asset-types";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp"; // publishable key, safe client-side, RLS = read-only
@@ -563,6 +564,12 @@ const CSS = `
       .home-featured-card-content { padding: 18px 20px 20px; }
       .home-featured-card-title { font-size: 16px; }
     }
+    /* ── Special Insight (full-width list) ── */
+    .home-special-list { display: flex; flex-direction: column; }
+    .home-special-list .home-article-list-item { border-bottom: 1px solid rgba(0,0,0,.07); }
+    .home-special-list .home-article-list-item:last-of-type { border-bottom: none; }
+    .home-special-list .insight-tag { background: #F2F0EE; color: #3d2c1e; border: 1px solid #D6D1CB; }
+
     @media (max-width: 991px) {
       .home-article-list { border-left: none; border-top: 1px solid rgba(0,0,0,.08); margin-left: 0; }
       .home-article-list-item { padding: 18px 0; }
@@ -580,6 +587,7 @@ const CSS = `
 export default function HomePage() {
   const [homeWeekHtml, setHomeWeekHtml] = useState<string | null>(null);
   const [homeLoaded, setHomeLoaded] = useState(false);
+  const [specialRows, setSpecialRows] = useState<Record<string, any>[]>([]);
   const [eventsHtml, setEventsHtml] = useState<string | null>(null);
 
   // Escape key closes the meeting modal
@@ -668,6 +676,13 @@ export default function HomePage() {
         setHomeLoaded(true);
       })
       .catch(() => setHomeLoaded(true));
+  }, []);
+
+  // Latest 3 published Special Insight articles; the section stays hidden when there are none
+  useEffect(() => {
+    sbFetch("special_insight", "select=path,asset_type,main_title,page_date&is_published=eq.true&order=page_date.desc,id.desc&limit=3").then((rows) =>
+      setSpecialRows(Array.isArray(rows) ? rows : [])
+    );
   }, []);
 
   // Mobile carousel: wire up nav buttons once the fetched week HTML is in the DOM
@@ -790,6 +805,7 @@ export default function HomePage() {
                 <a href="/wealth-whyus" data-nav-match="/wealth-whyus">Why us</a>
                 <a href="/wealth-privilegesandevents" data-nav-match="/wealth-privileges">Privileges &amp; events</a>
                 <a href="/wealth-insights" data-nav-match="/wealth-insights">Insights</a>
+                <a href="/wealth-special-insight" data-nav-match="/wealth-special-insight">Special Insight</a>
                 <a href="/wealth-contactus" data-nav-match="/wealth-contact">Contact us</a>
               </nav>
               <a href="#" className="btn-book-meeting" onClick={(e) => { e.preventDefault(); openMeetingModal(); }}>Book a meeting</a>
@@ -851,6 +867,44 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {specialRows.length > 0 && (
+        <>
+          <hr className="section-sep" />
+
+          {/* SPECIAL INSIGHT */}
+          <section className="insights-section">
+            <div className="container">
+              <div className="section-header-center">
+                <h2 className="section-title">Special Insight</h2>
+              </div>
+              <div className="home-special-list">
+                {specialRows.map((r) => {
+                  const url = "/wealth-special-insight/" + encodeURIComponent(r.path || "");
+                  return (
+                    <div className="home-article-list-item" key={r.path} onClick={() => (location.href = url)}>
+                      <div className="home-article-list-text">
+                        <span className="insight-tag">{assetTypeLabel(r.asset_type)}</span>
+                        <h4 className="home-article-list-title">{r.main_title || ""}</h4>
+                        <p className="home-article-list-date">{thaiDate(r.page_date)}</p>
+                      </div>
+                      <div className="home-article-list-thumb-wrap">
+                        <img src={SPECIAL_INSIGHT_THUMB} alt="" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="section-view-all-center">
+                <a href="/wealth-special-insight" className="view-all">
+                  ดู Special Insight ทั้งหมด
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </a>
+              </div>
+            </div>
+          </section>
+        </>
+      )}
 
       <hr className="section-sep" />
 
@@ -980,6 +1034,7 @@ export default function HomePage() {
                 <ul className="footer-nav-links">
                   <li><a href="/wealth-whyus">Why us</a></li>
                   <li><a href="/wealth-insights">Insights</a></li>
+                  <li><a href="/wealth-special-insight">Special Insight</a></li>
                 </ul>
                 <ul className="footer-nav-links">
                   <li><a href="/wealth-privilegesandevents">Privileges &amp; Events</a></li>
