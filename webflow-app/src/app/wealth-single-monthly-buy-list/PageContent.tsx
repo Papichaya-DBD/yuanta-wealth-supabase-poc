@@ -11,6 +11,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { goToInsights, loadRows, LoadErrorNotice } from "@/app/_components/article-load";
+import AiDisclaimer from "@/app/_components/AiDisclaimer";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp";
@@ -519,6 +520,7 @@ const CSS = `
   .fd-highlights h3,
   .fd-highlights h3 span { font-size:20px !important; }
   @media (max-width:767px) { .fd-highlights h3, .fd-highlights h3 span { font-size:18px !important; } }
+  .fd-disclaimers { margin:8px 0 24px; }
   .fd-cta { background: url('/images/theme/bginvest.jpg') center/cover no-repeat; padding:28px 24px; text-align:center; }
   .fd-cta-title { font-family:'Noto Sans Thai',sans-serif; font-size:16px; font-weight:700; color:#fff; margin-bottom:8px; line-height:1.4; }
   .fd-cta-desc { font-family:'Noto Sans Thai',sans-serif; font-size:13px; color:rgba(255,255,255,0.75); margin-bottom:20px; line-height:1.6; }
@@ -974,9 +976,15 @@ export default function SingleMonthlyBuyListPage() {
               </div>
             </div>
             <div className="fd-ai-text" dangerouslySetInnerHTML={{ __html: drawerData?.ai_summary || "" }} />
+            <AiDisclaimer variant="ai" overDrawer />
           </div>
           <div className="fd-highlights" style={{ display: drawerData?.content && drawerData.content.trim() ? "" : "none" }}>
             <div id="fdHighlights" dangerouslySetInnerHTML={{ __html: drawerData?.content || "" }} />
+          </div>
+          {/* Mutual funds also get the fund (Prospectus / Trailer Fee) disclaimer */}
+          <div className="fd-disclaimers">
+            {drawerType === "mf" && <AiDisclaimer variant="fund" overDrawer />}
+            <AiDisclaimer overDrawer />
           </div>
           <div className="fd-cta">
             <p className="fd-cta-title">ปรึกษาแผนการลงทุนกับผู้เชี่ยวชาญ</p>

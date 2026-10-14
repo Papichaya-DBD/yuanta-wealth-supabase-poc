@@ -13,6 +13,7 @@
 
 import { useEffect, useState } from "react";
 import { goToInsights, loadRows, LoadErrorNotice } from "@/app/_components/article-load";
+import AiDisclaimer from "@/app/_components/AiDisclaimer";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp";
@@ -513,6 +514,7 @@ const CSS = `
   .tbl-scroll-nav span { font-family:'Noto Sans Thai',sans-serif; font-size:12px; color:#8f9aac; }
   .tbl-scroll-btn { background:none; border:none; padding:3px 12px; cursor:pointer; color:#8f9aac; font-size:16px; line-height:1.4; transition:color .15s; }
   .tbl-scroll-btn:hover { color:#3d506e; }
+  .fd-disclaimers { margin:8px 0 24px; }
   .fd-cta { background: url('/images/theme/bginvest.jpg') center/cover no-repeat; padding:28px 24px; text-align:center; }
   .fd-cta-title { font-family:'Noto Sans Thai',sans-serif; font-size:16px; font-weight:700; color:#fff; margin-bottom:8px; line-height:1.4; }
   .fd-cta-desc { font-family:'Noto Sans Thai',sans-serif; font-size:13px; color:rgba(255,255,255,0.75); margin-bottom:20px; line-height:1.6; }
@@ -581,6 +583,8 @@ export default function SingleBuyListPage() {
   const [weekSlug, setWeekSlug] = useState("");
   const [relatedHtml, setRelatedHtml] = useState<string | null>(null);
   const [monthlyHtml, setMonthlyHtml] = useState<string | null>(null);
+  // fund_type of the fund open in the drawer; picks which disclaimers it shows
+  const [drawerFundType, setDrawerFundType] = useState("mf");
 
   const v = models[activeModel] || {};
   const corePct = v.core_pct != null ? v.core_pct : 78;
@@ -732,6 +736,7 @@ export default function SingleBuyListPage() {
   function renderDrawer(val: Record<string, any>) {
     const typeMap: Record<string, string> = { mf: "Mutual fund", dr: "DR", etf: "ETF/Offshore" };
     const typeName = val.fund_type || "mf";
+    setDrawerFundType(typeName);
     const nameEl = document.getElementById("fdName");
     if (nameEl) nameEl.textContent = val.fund_name || val.ticker || "";
     const badge = document.getElementById("fdType");
@@ -1020,9 +1025,15 @@ export default function SingleBuyListPage() {
               </div>
             </div>
             <div className="fd-ai-text" id="fdAiText"></div>
+            <AiDisclaimer variant="ai" overDrawer />
           </div>
           <div className="fd-highlights" id="fdContentWrap">
             <div id="fdHighlights"></div>
+          </div>
+          {/* Mutual funds also get the fund (Prospectus / Trailer Fee) disclaimer */}
+          <div className="fd-disclaimers">
+            {drawerFundType === "mf" && <AiDisclaimer variant="fund" overDrawer />}
+            <AiDisclaimer overDrawer />
           </div>
           <div className="fd-cta">
             <p className="fd-cta-title">ปรึกษาแผนการลงทุนกับผู้เชี่ยวชาญ</p>
