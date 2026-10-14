@@ -3,16 +3,18 @@
 // Short disclaimer with "อ่านเพิ่มเติม" opening a full text: a bottom sheet on
 // mobile, a centered modal on desktop. Three variants:
 //   "asset" (default) -- Asset Allocation; under every article's AI summary and
-//                        at the end of the buy-list fund popup
-//   "ai"              -- AI Summary; inside the buy-list popup's AI summary box
+//                        at the end of the buy-list fund popup; opens the full
+//                        Asset Allocation disclaimer
+//   "ai"              -- AI Summary; inside the buy-list popup's AI summary box;
+//                        opens the full AI Summary disclaimer
 //   "fund"            -- mutual funds only, in the buy-list popup; opens the
 //                        Conflict of Interest policy
-// "asset" and "ai" open the same full Asset Allocation disclaimer.
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { DISCLAIMER_BLOCKS, DISCLAIMER_TITLE, type DisclaimerBlock } from "./disclaimer-content";
 import { COI_BLOCKS, COI_TITLE } from "./disclaimer-coi-content";
+import { AI_DISC_BLOCKS, AI_DISC_TITLE } from "./disclaimer-ai-content";
 
 // 2026-10-02 to 2026-10-14 this was false (hidden everywhere); turned back on with
 // the buy-list popup disclaimers. Flip to false to hide every variant again.
@@ -31,7 +33,7 @@ const FUND_TEXT =
 type Variant = "asset" | "ai" | "fund";
 const VARIANTS: Record<Variant, { heading?: string; text: string; title: string; blocks: DisclaimerBlock[] }> = {
   asset: { text: ASSET_TEXT, title: DISCLAIMER_TITLE, blocks: DISCLAIMER_BLOCKS },
-  ai: { heading: AI_HEADING, text: AI_TEXT, title: DISCLAIMER_TITLE, blocks: DISCLAIMER_BLOCKS },
+  ai: { heading: AI_HEADING, text: AI_TEXT, title: AI_DISC_TITLE, blocks: AI_DISC_BLOCKS },
   fund: { text: FUND_TEXT, title: COI_TITLE, blocks: COI_BLOCKS },
 };
 
