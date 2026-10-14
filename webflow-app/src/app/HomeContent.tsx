@@ -897,7 +897,7 @@ export default function HomePage() {
               </div>
               <div className="section-view-all-center">
                 <a href="/wealth-special-insight" className="view-all">
-                  ดูบทความพิเศษทั้งหมด
+                  ดูบทวิเคราะห์พิเศษทั้งหมด
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </a>
               </div>
