@@ -74,7 +74,7 @@ function copyLink() {
   navigator.clipboard.writeText(location.href).then(() => alert("คัดลอกลิงก์แล้ว"));
 }
 function shareByEmail() {
-  location.href = "mailto:?subject=Special Insight — Yuanta Wealth&body=" + encodeURIComponent(location.href);
+  location.href = "mailto:?subject=Special Insights — Yuanta Wealth&body=" + encodeURIComponent(location.href);
 }
 
 const CSS = `
@@ -310,7 +310,7 @@ export default function SpecialInsightArticle() {
   useEffect(() => {
     if (!row) return;
     currentWeekRef.current = row.week_slug;
-    document.title = (row.main_title || "Special Insight");
+    document.title = (row.main_title || "Special Insights");
   }, [row]);
 
   // Table style tweaks, run after content committed to the DOM
@@ -413,7 +413,7 @@ export default function SpecialInsightArticle() {
                 <a href="/wealth-whyus" data-nav-match="/wealth-whyus">Why us</a>
                 <a href="/wealth-privilegesandevents" data-nav-match="/wealth-privileges">Privileges &amp; events</a>
                 <a href="/wealth-insights" data-nav-match="/wealth-insights">Insights</a>
-                <a href="/wealth-special-insight" data-nav-match="/wealth-special-insight">Special Insight</a>
+                <a href="/wealth-special-insight" data-nav-match="/wealth-special-insight">Special Insights</a>
                 <a href="/wealth-contactus" data-nav-match="/wealth-contact">Contact us</a>
               </nav>
               <a href="#" className="btn-book-meeting" onClick={(e) => { e.preventDefault(); openMeetingModal(); }}>Book a meeting</a>
@@ -429,7 +429,7 @@ export default function SpecialInsightArticle() {
               <ol>
                 <li><a href="https://wealth.yuanta.co.th/">Home</a></li>
                 <li className="sep">/</li>
-                <li><a href="/wealth-special-insight">Special Insight</a></li>
+                <li><a href="/wealth-special-insight">Special Insights</a></li>
                 <li className="sep">/</li>
                 <li className="active">{assetTypeLabel(row?.asset_type)}</li>
               </ol>
@@ -545,7 +545,7 @@ export default function SpecialInsightArticle() {
                 <ul className="footer-nav-links">
                   <li><a href="/wealth-whyus">Why us</a></li>
                   <li><a href="/wealth-insights">Insights</a></li>
-                  <li><a href="/wealth-special-insight">Special Insight</a></li>
+                  <li><a href="/wealth-special-insight">Special Insights</a></li>
                 </ul>
                 <ul className="footer-nav-links">
                   <li><a href="/wealth-privilegesandevents">Privileges &amp; Events</a></li>

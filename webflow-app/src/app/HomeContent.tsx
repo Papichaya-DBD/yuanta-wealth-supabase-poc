@@ -811,7 +811,7 @@ export default function HomePage() {
                 <a href="/wealth-whyus" data-nav-match="/wealth-whyus">Why us</a>
                 <a href="/wealth-privilegesandevents" data-nav-match="/wealth-privileges">Privileges &amp; events</a>
                 <a href="/wealth-insights" data-nav-match="/wealth-insights">Insights</a>
-                <a href="/wealth-special-insight" data-nav-match="/wealth-special-insight">Special Insight</a>
+                <a href="/wealth-special-insight" data-nav-match="/wealth-special-insight">Special Insights</a>
                 <a href="/wealth-contactus" data-nav-match="/wealth-contact">Contact us</a>
               </nav>
               <a href="#" className="btn-book-meeting" onClick={(e) => { e.preventDefault(); openMeetingModal(); }}>Book a meeting</a>
@@ -882,7 +882,7 @@ export default function HomePage() {
           <section className="insights-section">
             <div className="container">
               <div className="section-header-center">
-                <h2 className="section-title">Special Insight</h2>
+                <h2 className="section-title">Special Insights</h2>
               </div>
               <div className="home-special-list">
                 {specialRows.map((r) => {
@@ -903,7 +903,7 @@ export default function HomePage() {
               </div>
               <div className="section-view-all-center">
                 <a href="/wealth-special-insight" className="view-all">
-                  ดู Special Insight ทั้งหมด
+                  ดูบทความพิเศษทั้งหมด
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </a>
               </div>
@@ -1040,7 +1040,7 @@ export default function HomePage() {
                 <ul className="footer-nav-links">
                   <li><a href="/wealth-whyus">Why us</a></li>
                   <li><a href="/wealth-insights">Insights</a></li>
-                  <li><a href="/wealth-special-insight">Special Insight</a></li>
+                  <li><a href="/wealth-special-insight">Special Insights</a></li>
                 </ul>
                 <ul className="footer-nav-links">
                   <li><a href="/wealth-privilegesandevents">Privileges &amp; Events</a></li>

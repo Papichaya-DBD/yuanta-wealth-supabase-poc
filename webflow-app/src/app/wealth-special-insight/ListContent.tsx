@@ -173,7 +173,7 @@ export default function SpecialInsightList() {
                 <a href="/wealth-whyus" data-nav-match="/wealth-whyus">Why us</a>
                 <a href="/wealth-privilegesandevents" data-nav-match="/wealth-privileges">Privileges &amp; events</a>
                 <a href="/wealth-insights" data-nav-match="/wealth-insights">Insights</a>
-                <a href="/wealth-special-insight" data-nav-match="/wealth-special-insight">Special Insight</a>
+                <a href="/wealth-special-insight" data-nav-match="/wealth-special-insight">Special Insights</a>
                 <a href="/wealth-contactus" data-nav-match="/wealth-contact">Contact us</a>
               </nav>
               <a href="#" className="btn-book-meeting" onClick={(e) => { e.preventDefault(); openMeetingModal(); }}>Book a meeting</a>
@@ -187,7 +187,7 @@ export default function SpecialInsightList() {
         <div className="hero-inner hero-content" style={{ width: "100%" }}>
           <div className="container">
             <div style={{ textAlign: "center", width: "100%" }}>
-              <h1 className="hero-title">Special Insight</h1>
+              <h1 className="hero-title">Special Insights</h1>
               <p className="hero-subtitle">บทวิเคราะห์เชิงลึกเฉพาะเรื่องจากผู้เชี่ยวชาญ Yuanta Wealth Management</p>
             </div>
           </div>
@@ -208,7 +208,7 @@ export default function SpecialInsightList() {
             </div>
           )}
           {pages > 1 && (
-            <nav className="special-pagination" aria-label="Special Insight pages">
+            <nav className="special-pagination" aria-label="Special Insights pages">
               <button className="special-page-btn" disabled={cur === 1} onClick={() => goTo(cur - 1)} aria-label="ก่อนหน้า">&lsaquo;</button>
               {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
                 <button key={p} className={"special-page-btn" + (p === cur ? " active" : "")} onClick={() => goTo(p)}>
@@ -246,7 +246,7 @@ export default function SpecialInsightList() {
                 <ul className="footer-nav-links">
                   <li><a href="/wealth-whyus">Why us</a></li>
                   <li><a href="/wealth-insights">Insights</a></li>
-                  <li><a href="/wealth-special-insight">Special Insight</a></li>
+                  <li><a href="/wealth-special-insight">Special Insights</a></li>
                 </ul>
                 <ul className="footer-nav-links">
                   <li><a href="/wealth-privilegesandevents">Privileges &amp; Events</a></li>
