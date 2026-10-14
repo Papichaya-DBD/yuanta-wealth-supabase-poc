@@ -1,14 +1,14 @@
 "use client";
 
 // Special Insight list: every published special_insight row as cards (same card
-// as the Insights page), newest first, 40 per page with ?page=N pagination.
+// as the Insights page), newest first, 12 per page (three rows on desktop) with ?page=N pagination.
 
 import { useEffect, useState } from "react";
 import { assetTypeLabel, SPECIAL_INSIGHT_THUMB } from "./asset-types";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp";
-const PER_PAGE = 40;
+const PER_PAGE = 12; // three rows of four on desktop
 const FALLBACK_IMG = "/images/theme/comingsoon.png";
 const THAI_MONTHS = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
 
