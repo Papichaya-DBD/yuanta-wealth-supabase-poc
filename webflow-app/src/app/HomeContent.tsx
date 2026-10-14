@@ -569,12 +569,6 @@ const CSS = `
     .home-special-list .home-article-list-item { border-bottom: 1px solid rgba(0,0,0,.07); }
     .home-special-list .home-article-list-item:last-of-type { border-bottom: none; }
     .home-special-list .insight-tag { background: #F2F0EE; color: #3d2c1e; border: 1px solid #D6D1CB; }
-    @media (min-width: 992px) {
-      /* Two columns split by a vertical line; the last row has no bottom border */
-      .home-special-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 0; }
-      .home-special-list .home-article-list-item:nth-child(even) { border-left: 1px solid rgba(0,0,0,.1); }
-      .home-special-list .home-article-list-item:nth-last-child(2):nth-child(odd) { border-bottom: none; }
-    }
 
     @media (max-width: 991px) {
       .home-article-list { border-left: none; border-top: 1px solid rgba(0,0,0,.08); margin-left: 0; }
@@ -684,7 +678,7 @@ export default function HomePage() {
       .catch(() => setHomeLoaded(true));
   }, []);
 
-  // Latest 4 published Special Insight articles (two columns of two on desktop); the section stays hidden when there are none
+  // Latest 4 published Special Insight articles, one full-width row each; the section stays hidden when there are none
   useEffect(() => {
     sbFetch("special_insight", "select=path,asset_type,main_title,page_date&is_published=eq.true&order=page_date.desc,id.desc&limit=4").then((rows) =>
       setSpecialRows(Array.isArray(rows) ? rows : [])
