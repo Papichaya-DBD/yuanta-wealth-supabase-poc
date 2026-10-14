@@ -48,7 +48,7 @@ function closeMeetingModal() {
 }
 
 const CSS = `
-  .special-content { background: #fff; padding: 40px 0 80px; }
+  .special-content { background: #fff; padding: 60px 0; }
   .insight-tag { font-family: 'Cormorant Garamond', serif; font-size: 12px; font-weight: 600; padding: 2px 9px; white-space: nowrap; display: inline-block; }
   .tag-special { background: #F2F0EE; color: #3d2c1e; border: 1px solid #D6D1CB; }
   .insight-card { background: #fff; display: flex; flex-direction: column; height: 100%; cursor: pointer; transition: box-shadow .2s, transform .18s; box-shadow: 0 0 1px rgba(102,102,102,.14), 0 2px 6px rgba(102,102,102,.08); }
@@ -67,7 +67,7 @@ const CSS = `
   .special-page-btn.active { background: #0c244a; border-color: #0c244a; color: #fff; }
   .special-page-btn:disabled { opacity: .35; cursor: default; }
   @media (max-width: 767px) {
-    .special-content { padding: 24px 0 60px; }
+    .special-content { padding: 40px 0; }
     .insight-card-img { height: 130px; }
   }
 `;
