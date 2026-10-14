@@ -3,12 +3,12 @@
 // Special Insight article: a copy of the monthly asset class outlook page
 // (wealth-single-monthly-asset-class-outlook/PageContent.tsx) reading the
 // special_insight table instead. Row identity is `path`; asset_type picks the
-// category tag. No related-articles section (removed on request).
+// category tag. The related section lists the latest other Special Insights.
 
 import { useEffect, useRef, useState } from "react";
 import AiDisclaimer from "@/app/_components/AiDisclaimer";
 import { loadRows, LoadErrorNotice } from "@/app/_components/article-load";
-import { assetTypeLabel } from "../asset-types";
+import { assetTypeLabel, SPECIAL_INSIGHT_THUMB } from "../asset-types";
 
 function goToSpecialInsight() {
   window.location.replace("/wealth-special-insight");
@@ -45,6 +45,22 @@ function thaiDateM(dateStr?: string) {
 }
 
 type RelatedTable = { id: string; label: string; cls: string; path: string; usePath?: boolean; multi?: boolean; excludeSelf?: boolean };
+
+function relatedCardHtml(row: Record<string, any>) {
+  const url = "/wealth-special-insight/" + (row.path || "");
+  const excerpt = row.description || stripHtml(row.ai_summary);
+  return (
+    '<div class="swiper-slide">' +
+    `<div class="insight-card" onclick="location.href='${url}'">` +
+    `<div class="insight-card-img-wrap"><img class="insight-card-img" src="${SPECIAL_INSIGHT_THUMB}" alt="" /></div>` +
+    '<div class="insight-card-content">' +
+    `<span class="insight-card-img-tag insight-tag tag-asset-outlook">${assetTypeLabel(row.asset_type)}</span>` +
+    `<h4 class="insight-card-title">${row.main_title || ""}</h4>` +
+    `<p class="insight-card-date">${thaiDateM(row.page_date)}</p>` +
+    (excerpt ? `<p class="insight-card-excerpt">${excerpt}</p>` : "") +
+    "</div></div></div>"
+  );
+}
 
 function openMeetingModal() {
   const modal = document.getElementById("meeting-modal");
@@ -240,6 +256,7 @@ export default function SpecialInsightArticle() {
   const [row, setRow] = useState<Record<string, any> | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [experts, setExperts] = useState<string | null>(null);
+  const [relatedHtml, setRelatedHtml] = useState<string | null>(null);
   const currentWeekRef = useRef("");
   const [weekModalHtml, setWeekModalHtml] = useState<string>("");
   const [weekModalOpen, setWeekModalOpen] = useState(false);
@@ -311,6 +328,15 @@ export default function SpecialInsightArticle() {
     if (!row) return;
     currentWeekRef.current = row.week_slug;
     document.title = (row.main_title || "Special Insights");
+
+    // Latest 4 other published Special Insights; the section stays hidden when there are none
+    sbFetch(
+      "special_insight",
+      "select=path,asset_type,main_title,page_date,description,ai_summary&is_published=eq.true&path=neq." +
+        encodeURIComponent(row.path) + "&order=page_date.desc,id.desc&limit=4"
+    ).then((rows) => {
+      if (Array.isArray(rows) && rows.length) setRelatedHtml(rows.map(relatedCardHtml).join(""));
+    });
   }, [row]);
 
   // Table style tweaks, run after content committed to the DOM
@@ -328,6 +354,23 @@ export default function SpecialInsightArticle() {
       el.querySelectorAll("td").forEach((c) => ((c as HTMLElement).style.padding = "10px"));
     });
   }, [row]);
+
+  useEffect(() => {
+    if (!relatedHtml) return;
+    const SwiperCtor = (window as any).Swiper;
+    if (!SwiperCtor) return;
+    new SwiperCtor(".weekly-related-swiper", {
+      slidesPerView: 4,
+      spaceBetween: 16,
+      watchOverflow: false,
+      navigation: { prevEl: ".weekly-prev", nextEl: ".weekly-next", disabledClass: "swiper-button-disabled" },
+      breakpoints: {
+        0: { enabled: false },
+        768: { enabled: false },
+        992: { enabled: true, slidesPerView: 4, spaceBetween: 16 },
+      },
+    });
+  }, [relatedHtml]);
 
   const WEEKLY_THUMB: Record<string, string> = {
     weekly_hot_issue: "/images/theme/thumb-hot-issue.png",
@@ -497,6 +540,25 @@ export default function SpecialInsightArticle() {
                 </button>
               </div>
 
+              {relatedHtml && (
+                <div className="related-section">
+                  <div className="container">
+                    <div className="col-12 col-lg-9 mx-auto">
+                      <div className="related-week-header-row">
+                        <span className="related-week-chip related-week-chip-monthly">Special Insights</span>
+                        <span className="related-week-label">บทความล่าสุด</span>
+                      </div>
+                      <div className="weekly-related-wrapper">
+                        <div className="swiper weekly-related-swiper">
+                          <div className="swiper-wrapper" dangerouslySetInnerHTML={{ __html: relatedHtml }} />
+                        </div>
+                        <div className="swiper-button-prev weekly-prev"></div>
+                        <div className="swiper-button-next weekly-next"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
