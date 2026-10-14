@@ -329,11 +329,11 @@ export default function SpecialInsightArticle() {
     currentWeekRef.current = row.week_slug;
     document.title = (row.main_title || "Special Insights");
 
-    // Latest 4 other published Special Insights; the section stays hidden when there are none
+    // Latest 16 other published Special Insights (4 visible, arrows scroll the rest); the section stays hidden when there are none
     sbFetch(
       "special_insight",
       "select=path,asset_type,main_title,page_date,description,ai_summary&is_published=eq.true&path=neq." +
-        encodeURIComponent(row.path) + "&order=page_date.desc,id.desc&limit=4"
+        encodeURIComponent(row.path) + "&order=page_date.desc,id.desc&limit=16"
     ).then((rows) => {
       if (Array.isArray(rows) && rows.length) setRelatedHtml(rows.map(relatedCardHtml).join(""));
     });
