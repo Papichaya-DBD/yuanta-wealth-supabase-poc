@@ -812,7 +812,7 @@ export default function SingleMonthlyBuyListPage() {
                     </div>
                   </div>
                   <div className="invest-btn-wrap">
-                    <a href="#" className="invest-btn" onClick={(e) => { e.preventDefault(); openMeetingModal(); }}>สนใจลงทุน</a>
+                    <a href="/wealth-contactus" className="invest-btn">สนใจลงทุน</a>
                   </div>
                 </div>
 

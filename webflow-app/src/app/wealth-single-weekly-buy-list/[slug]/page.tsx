@@ -871,7 +871,7 @@ export default function SingleBuyListPage() {
                     </div>
                   </div>
                   <div className="invest-btn-wrap">
-                    <a href="#" className="invest-btn">สนใจลงทุน</a>
+                    <a href="/wealth-contactus" className="invest-btn">สนใจลงทุน</a>
                   </div>
                 </div>
 
