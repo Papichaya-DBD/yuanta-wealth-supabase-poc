@@ -589,6 +589,7 @@ export default function SingleAssetPerformancePage() {
                     <button className="article-cta-outline-btn" onClick={() => openMonthlyModal()}>บทวิเคราะห์ประจำเดือน &gt;</button>
                   </div>
                 </div>
+                <AiDisclaimer />
 
                 {expertsHtml && (
                   <div className="experts-section" id="expertsSection">

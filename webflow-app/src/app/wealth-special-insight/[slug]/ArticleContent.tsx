@@ -519,6 +519,7 @@ export default function SpecialInsightArticle() {
                   <a className="article-cta-btn" href={row ? `/wealth-monthly-report?week=${encodeURIComponent(row.week_slug)}` : "#"} target="_blank" rel="noopener">ดูมุมมองเพิ่มเติม</a>
                 </div>
               </div>
+              <AiDisclaimer />
 
               {experts && (
                 <div className="experts-section">

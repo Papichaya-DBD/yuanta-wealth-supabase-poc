@@ -908,6 +908,7 @@ export default function SingleBuyListPage() {
                     <button className="article-cta-outline-btn" onClick={() => openMonthlyModal()}>บทวิเคราะห์ประจำเดือน &gt;</button>
                   </div>
                 </div>
+                <AiDisclaimer />
 
                 <div className="experts-section" id="expertsSection">
                   <p className="experts-title">บทวิเคราะห์โดย</p>

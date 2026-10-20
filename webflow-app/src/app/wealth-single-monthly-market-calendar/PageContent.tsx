@@ -706,6 +706,7 @@ export default function SingleMonthlyMarketCalendarPage() {
                     <a className="article-cta-btn" id="f-cta-link" href={row ? `/wealth-monthly-report?week=${encodeURIComponent(row.week_slug)}` : "#"} target="_blank" rel="noopener">ดูมุมมองเพิ่มเติม</a>
                   </div>
                 </div>
+                <AiDisclaimer />
 
                 {experts && (
                   <div className="experts-section">

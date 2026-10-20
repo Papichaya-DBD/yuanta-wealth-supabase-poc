@@ -845,6 +845,7 @@ export default function SingleMonthlyBuyListPage() {
                     <a className="article-cta-btn" href={anyModelRow ? `/wealth-monthly-report?week=${encodeURIComponent(anyModelRow.week_slug)}` : "#"} target="_blank">ดูมุมมองเพิ่มเติม</a>
                   </div>
                 </div>
+                <AiDisclaimer />
 
                 <div className="experts-section">
                   <p className="experts-title">บทวิเคราะห์โดย</p>

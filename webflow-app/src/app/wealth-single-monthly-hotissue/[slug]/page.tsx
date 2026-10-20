@@ -517,6 +517,7 @@ export default function SingleMonthlyHotIssuePage() {
                   <a className="article-cta-btn" href={row ? `/wealth-monthly-report?week=${encodeURIComponent(row.week_slug)}` : "#"} target="_blank" rel="noopener noreferrer">ดูมุมมองเพิ่มเติม</a>
                 </div>
               </div>
+              <AiDisclaimer />
 
               {expertsHtml && (
                 <div className="experts-section">
