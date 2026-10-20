@@ -493,7 +493,7 @@ const CSS = `
   .fd-ai-text { font-family:'Noto Sans Thai',sans-serif; font-size:13px; color:#3d506e; line-height:1.75; }
   .fd-ai-text p { margin-bottom:8px; }
   .fd-ai-text p:last-child { margin-bottom:0; }
-  @media (max-width:767px) { .fd-ai-lbl { font-size:24px; } .fd-ai-text { font-size:16px; } .fd-ai-box .ai-disclaimer { font-size:12px; } }
+  @media (max-width:767px) { .fd-ai-lbl { font-size:24px; } .fd-ai-text { font-size:16px; } .fd-ai-box .ai-disclaimer, .fd-disclaimers .ai-disclaimer { font-size:12px; } }
   .fd-section-title { font-family:'Noto Sans Thai',sans-serif; font-size:15px; font-weight:700; color:#0c244a; margin-bottom:12px; padding-bottom:8px; border-bottom:2px solid #0c244a; display:inline-block; }
   .fd-highlights { margin-bottom:0; }
   .fd-highlights ul { list-style:none; padding:0; margin:0; }
