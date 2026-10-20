@@ -30,11 +30,12 @@ const AI_TEXT =
 const FUND_TEXT =
   "กองทุนรวมและการลงทุนแต่ละประเภทมีลักษณะและความเสี่ยงเฉพาะ ผู้ลงทุนควรทำความเข้าใจลักษณะ ความเสี่ยง เงื่อนไข และผลตอบแทนจากหนังสือชี้ชวน (Prospectus) ก่อนตัดสินใจลงทุน การลงทุนอาจมีความผันผวนและมีโอกาสได้รับเงินคืนต่ำกว่าเงินลงทุนเริ่มแรก บริษัทฯ ได้รับ Trailer Fee (ค่าธรรมเนียมทางอ้อม) จาก บลจ. โดยไม่เรียกเก็บค่าธรรมเนียมเพิ่มเติมจากผู้ลงทุน เพื่อให้บริการข้อมูล คำแนะนำ และบริการหลังการขาย ทั้งนี้ บริษัทฯ มีนโยบายจัดการความขัดแย้งทางผลประโยชน์ (Conflict of Interest) รายละเอียดศึกษาได้ที่";
 
+// Every popup is titled "คำเตือนและข้อสงวนสิทธิ์"; the AI and fund documents open with their own name as a bold heading.
 type Variant = "asset" | "ai" | "fund";
 const VARIANTS: Record<Variant, { heading?: string; text: string; title: string; blocks: DisclaimerBlock[] }> = {
   asset: { text: ASSET_TEXT, title: DISCLAIMER_TITLE, blocks: DISCLAIMER_BLOCKS },
-  ai: { heading: AI_HEADING, text: AI_TEXT, title: AI_DISC_TITLE, blocks: AI_DISC_BLOCKS },
-  fund: { text: FUND_TEXT, title: COI_TITLE, blocks: COI_BLOCKS },
+  ai: { heading: AI_HEADING, text: AI_TEXT, title: DISCLAIMER_TITLE, blocks: [{ kind: "heading", html: AI_DISC_TITLE }, ...AI_DISC_BLOCKS] },
+  fund: { text: FUND_TEXT, title: DISCLAIMER_TITLE, blocks: [{ kind: "heading", html: COI_TITLE }, ...COI_BLOCKS] },
 };
 
 const CSS = `
@@ -58,7 +59,7 @@ const CSS = `
   .disc-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; border-bottom: 1px solid #E5E7EB; flex-shrink: 0; }
   .disc-title { margin: 0; font-size: 18px; font-weight: 700; color: #0C244A; }
   .disc-close { background: none; border: 0; padding: 4px; cursor: pointer; color: #0C244A; line-height: 0; }
-  .disc-body { overflow-y: auto; padding: 20px 24px 28px; font-size: 15px; line-height: 1.75; }
+  .disc-body { overflow-y: auto; padding: 20px 24px 28px; font-size: 14px; line-height: 1.75; }
   .disc-body p { margin: 0 0 6px; }
   .disc-body .disc-heading { font-weight: 700; margin-top: 18px; }
   .disc-body .disc-heading:first-child { margin-top: 0; }
