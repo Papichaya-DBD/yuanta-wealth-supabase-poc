@@ -6,7 +6,7 @@ const ASSET_TYPE_LABELS: Record<string, string> = {
 
 export function assetTypeLabel(assetType?: string) {
   const t = (assetType || "").trim();
-  if (!t) return "Special Insights";
+  if (!t) return "Editions";
   return ASSET_TYPE_LABELS[t.toLowerCase()] || t.charAt(0).toUpperCase() + t.slice(1);
 }
 

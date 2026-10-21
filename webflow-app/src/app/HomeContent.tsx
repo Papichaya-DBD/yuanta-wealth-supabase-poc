@@ -17,7 +17,7 @@
 // rendering avoids that entirely.
 
 import { useEffect, useState } from "react";
-import { assetTypeLabel, SPECIAL_INSIGHT_THUMB } from "./wealth-special-insight/asset-types";
+import { assetTypeLabel, SPECIAL_INSIGHT_THUMB } from "./wealth-editions/asset-types";
 
 const SUPABASE_URL = "https://kqgdvpqygepvaifzrxki.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_6khmxt87r-YGlSxyF9d9XA_G0NNDTbp"; // publishable key, safe client-side, RLS = read-only
@@ -805,7 +805,7 @@ export default function HomePage() {
                 <a href="/wealth-whyus" data-nav-match="/wealth-whyus">Why us</a>
                 <a href="/wealth-privilegesandevents" data-nav-match="/wealth-privileges">Privileges &amp; events</a>
                 <a href="/wealth-insights" data-nav-match="/wealth-insights">Insights</a>
-                <a href="/wealth-special-insight" data-nav-match="/wealth-special-insight">Special Insights</a>
+                <a href="/wealth-editions" data-nav-match="/wealth-editions">Editions</a>
                 <a href="/wealth-contactus" data-nav-match="/wealth-contact">Contact us</a>
               </nav>
               <a href="#" className="btn-book-meeting" onClick={(e) => { e.preventDefault(); openMeetingModal(); }}>Book a meeting</a>
@@ -876,11 +876,11 @@ export default function HomePage() {
           <section className="insights-section">
             <div className="container">
               <div className="section-header-center">
-                <h2 className="section-title">Special Insights</h2>
+                <h2 className="section-title">Editions</h2>
               </div>
               <div className="home-special-list">
                 {specialRows.map((r) => {
-                  const url = "/wealth-special-insight/" + encodeURIComponent(r.path || "");
+                  const url = "/wealth-editions/" + encodeURIComponent(r.path || "");
                   return (
                     <div className="home-article-list-item" key={r.path} onClick={() => (location.href = url)}>
                       <div className="home-article-list-text">
@@ -896,7 +896,7 @@ export default function HomePage() {
                 })}
               </div>
               <div className="section-view-all-center">
-                <a href="/wealth-special-insight" className="view-all">
+                <a href="/wealth-editions" className="view-all">
                   ดูบทวิเคราะห์พิเศษทั้งหมด
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </a>
@@ -1034,7 +1034,7 @@ export default function HomePage() {
                 <ul className="footer-nav-links">
                   <li><a href="/wealth-whyus">Why us</a></li>
                   <li><a href="/wealth-insights">Insights</a></li>
-                  <li><a href="/wealth-special-insight">Special Insights</a></li>
+                  <li><a href="/wealth-editions">Editions</a></li>
                 </ul>
                 <ul className="footer-nav-links">
                   <li><a href="/wealth-privilegesandevents">Privileges &amp; Events</a></li>
