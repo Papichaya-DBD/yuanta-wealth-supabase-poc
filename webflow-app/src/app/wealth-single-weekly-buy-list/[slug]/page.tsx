@@ -265,7 +265,6 @@ function monthlyCardHtml(t: WTable, row: Record<string, any>) {
 }
 
 const EXPERTS = [
-  { name: "Danai Aroonkittichai", credentials: "CFA", photo: "/images/theme/expert-d6c3628f8f.jpg" },
   { name: "Visakorn Kirivan", credentials: "CFA, PhD", photo: "/images/theme/expert-99d9ed77ce.jpg" },
   { name: "Natakit Karnkriangkrai", credentials: "", photo: "/images/theme/expert-f80e3df909.jpg" },
 ];
