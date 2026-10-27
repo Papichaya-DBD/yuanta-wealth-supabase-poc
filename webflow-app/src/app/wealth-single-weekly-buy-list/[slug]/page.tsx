@@ -103,7 +103,7 @@ function fundTagsHtml(fundsStr?: string) {
       typesPresent[f.type] = true;
       const cls = f.type === "dr" ? " dr" : f.type === "etf" ? " etf" : "";
       return (
-        `<button class="ftag${cls}" onclick="window.__openFundDrawer('${f.ticker}')">` +
+        `<button class="ftag${cls}" onclick="window.__openFundDrawer('${f.ticker}', '${f.type}')">` +
         f.ticker +
         ' <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4l4 4-4 4"/></svg></button>'
       );
@@ -716,7 +716,9 @@ export default function SingleBuyListPage() {
   }
 
   const fundCache: Record<string, any> = (globalThis as any).__fundCache || ((globalThis as any).__fundCache = {});
-  function openDrawer(ticker: string) {
+  // tagType comes from the buy-list tag; used when fund_detail has no row or no fund_type for the ticker
+  function openDrawer(ticker: string, tagType?: string) {
+    const fallbackType = tagType || "mf";
     document.getElementById("fundOverlay")?.classList.add("open");
     document.getElementById("fundDrawer")?.classList.add("open");
     document.body.style.overflow = "hidden";
@@ -728,7 +730,8 @@ export default function SingleBuyListPage() {
     const hlEl = document.getElementById("fdHighlights");
     if (hlEl) hlEl.innerHTML = "";
     sbFetch("fund_detail", `ticker=eq.${encodeURIComponent(ticker)}`).then((rows) => {
-      const val = rows.length ? rows[0] : { ticker, fund_name: ticker, fund_type: "mf", ai_summary: "", content: "" };
+      const val = rows.length ? rows[0] : { ticker, fund_name: ticker, fund_type: fallbackType, ai_summary: "", content: "" };
+      if (!val.fund_type) val.fund_type = fallbackType;
       fundCache[ticker] = val;
       renderDrawer(val);
     });

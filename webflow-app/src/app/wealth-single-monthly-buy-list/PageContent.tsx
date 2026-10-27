@@ -100,7 +100,7 @@ function fundTagsHtml(fundsStr?: string) {
       typesPresent[f.type] = true;
       const cls = f.type === "dr" ? " dr" : f.type === "etf" ? " etf" : "";
       return (
-        `<button class="ftag${cls}" onclick="window.__openFundDrawer && window.__openFundDrawer('${f.ticker}')">` +
+        `<button class="ftag${cls}" onclick="window.__openFundDrawer && window.__openFundDrawer('${f.ticker}', '${f.type}')">` +
         f.ticker +
         ' <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4l4 4-4 4"/></svg></button>'
       );
@@ -562,15 +562,18 @@ export default function SingleMonthlyBuyListPage() {
 
   // Fund drawer open/close, exposed on window for the onclick markup produced by fundTagsHtml
   useEffect(() => {
-    (window as any).__openFundDrawer = (ticker: string) => {
+    // tagType comes from the buy-list tag; used when fund_detail has no row or no fund_type for the ticker
+    (window as any).__openFundDrawer = (ticker: string, tagType?: string) => {
+      const fallbackType = tagType || "mf";
       setDrawerOpen(true);
       if (fundCacheRef.current[ticker]) {
         setDrawerData(fundCacheRef.current[ticker]);
         return;
       }
-      setDrawerData({ ticker, fund_name: ticker, fund_type: "mf", ai_summary: "", content: "", __loading: true });
+      setDrawerData({ ticker, fund_name: ticker, fund_type: fallbackType, ai_summary: "", content: "", __loading: true });
       sbFetch("fund_detail", "select=*&ticker=eq." + encodeURIComponent(ticker)).then((rows) => {
-        const v = rows.length ? rows[0] : { ticker, fund_name: ticker, fund_type: "mf", ai_summary: "", content: "" };
+        const v = rows.length ? rows[0] : { ticker, fund_name: ticker, fund_type: fallbackType, ai_summary: "", content: "" };
+        if (!v.fund_type) v.fund_type = fallbackType;
         fundCacheRef.current[ticker] = v;
         setDrawerData(v);
       });
