@@ -716,13 +716,14 @@ export default function SingleBuyListPage() {
   }
 
   const fundCache: Record<string, any> = (globalThis as any).__fundCache || ((globalThis as any).__fundCache = {});
-  // tagType comes from the buy-list tag; used when fund_detail has no row or no fund_type for the ticker
+  // The type always comes from the clicked buy-list tag: one ticker can be DR in one theme and ETF in another,
+  // while fund_detail holds a single row per ticker (used only for name, AI summary and highlights)
   function openDrawer(ticker: string, tagType?: string) {
-    const fallbackType = tagType || "mf";
+    const fundType = tagType || "mf";
     document.getElementById("fundOverlay")?.classList.add("open");
     document.getElementById("fundDrawer")?.classList.add("open");
     document.body.style.overflow = "hidden";
-    if (fundCache[ticker]) { renderDrawer(fundCache[ticker]); return; }
+    if (fundCache[ticker]) { renderDrawer(fundCache[ticker], fundType); return; }
     const nameEl = document.getElementById("fdName");
     if (nameEl) nameEl.textContent = ticker;
     const aiEl = document.getElementById("fdAiText");
@@ -730,15 +731,13 @@ export default function SingleBuyListPage() {
     const hlEl = document.getElementById("fdHighlights");
     if (hlEl) hlEl.innerHTML = "";
     sbFetch("fund_detail", `ticker=eq.${encodeURIComponent(ticker)}`).then((rows) => {
-      const val = rows.length ? rows[0] : { ticker, fund_name: ticker, fund_type: fallbackType, ai_summary: "", content: "" };
-      if (!val.fund_type) val.fund_type = fallbackType;
+      const val = rows.length ? rows[0] : { ticker, fund_name: ticker, ai_summary: "", content: "" };
       fundCache[ticker] = val;
-      renderDrawer(val);
+      renderDrawer(val, fundType);
     });
   }
-  function renderDrawer(val: Record<string, any>) {
+  function renderDrawer(val: Record<string, any>, typeName: string) {
     const typeMap: Record<string, string> = { mf: "Mutual fund", dr: "DR", etf: "ETF/Offshore" };
-    const typeName = val.fund_type || "mf";
     setDrawerFundType(typeName);
     const nameEl = document.getElementById("fdName");
     if (nameEl) nameEl.textContent = val.fund_name || val.ticker || "";
