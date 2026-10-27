@@ -512,7 +512,7 @@ export default function SingleMonthlyHotIssuePage() {
 
               <div className="article-cta-row">
                 <div className="article-cta-left">
-                  <p className="article-cta-title">ต้องการดูภาพรวมทั้งสัปดาห์?</p>
+                  <p className="article-cta-title">ต้องการดูภาพรวมทั้งเดือน?</p>
                   <p className="article-cta-sub">เนื้อหานี้เป็นส่วนหนึ่งของบทวิเคราะห์ฉบับเต็มที่ครอบคลุมเนื้อหาทุก asset class</p>
                   <a className="article-cta-btn" href={row ? `/wealth-monthly-report?week=${encodeURIComponent(row.week_slug)}` : "#"} target="_blank" rel="noopener noreferrer">ดูมุมมองเพิ่มเติม</a>
                 </div>
