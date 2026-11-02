@@ -963,19 +963,6 @@ export default function HomePage() {
               <div className="swiper-slide">
                 <div className="expert-card">
                   <div className="expert-photo-wrap">
-                    <img className="expert-photo" src="/images/theme/expert-d6c3628f8f.jpg" alt="Danai Aroonkittichai" />
-                  </div>
-                  <div className="expert-card-body">
-                    <p className="expert-name">Danai Aroonkittichai</p>
-                    <p className="expert-role">CFA</p>
-                    <div className="expert-divider-strip"></div>
-                    <p className="expert-title-th">Chief Retail Business Office at Yuanta Securities</p>
-                  </div>
-                </div>
-              </div>
-              <div className="swiper-slide">
-                <div className="expert-card">
-                  <div className="expert-photo-wrap">
                     <img className="expert-photo" src="/images/theme/expert-99d9ed77ce.jpg" alt="Visakorn Kirivan" />
                   </div>
                   <div className="expert-card-body">

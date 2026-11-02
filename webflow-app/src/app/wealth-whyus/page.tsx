@@ -147,19 +147,6 @@ export default function WhyUsPage() {
             <div className="col-12 col-sm-6 col-lg-3">
               <div className="expert-card">
                 <div className="expert-photo-wrap">
-                  <img className="expert-photo" src="/images/theme/expert-d6c3628f8f.jpg" alt="Expert" />
-                </div>
-                <div className="expert-card-body">
-                  <p className="expert-name">Danai Aroonkittichai</p>
-                  <p className="expert-role">CFA</p>
-                  <div className="expert-divider-strip"></div>
-                  <p className="expert-title-th">Chief Retail Business Office at Yuanta Securities</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-12 col-sm-6 col-lg-3">
-              <div className="expert-card">
-                <div className="expert-photo-wrap">
                   <img className="expert-photo" src="/images/theme/expert-99d9ed77ce.jpg" alt="Expert" />
                 </div>
                 <div className="expert-card-body">
