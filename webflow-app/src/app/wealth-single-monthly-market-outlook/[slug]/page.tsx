@@ -144,7 +144,7 @@ const CSS = `
   @media (max-width: 767px) { .article-content h3 { font-size: 18px; } .article-content p { font-size: 16px; } }
   .article-content table { width: 100% !important; border-collapse: collapse; margin: 20px 0; font-family: 'Noto Sans Thai', sans-serif; font-size: 13px; }
   .article-content table th { background: #0c244a; color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; word-break: break-word; overflow-wrap: anywhere; }
-  .article-content table td { padding: 10px 14px; border-bottom: 1px solid #eaeaea; color: #1a2e44; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; }
+  .article-content table td { padding: 10px 14px; border-bottom: 1px solid #eaeaea; color: #1a2e44; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; text-align: center; }
   .article-content table tr:nth-child(even) td { background: #f9f7f4; }
   .article-content img { width: 100%; border-radius: 4px; margin: 16px 0; display: block; }
   .article-content ul, .article-content ol { padding-left: 20px; margin-bottom: 14px; }

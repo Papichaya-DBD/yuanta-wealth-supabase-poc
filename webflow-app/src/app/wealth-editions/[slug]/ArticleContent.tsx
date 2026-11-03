@@ -146,7 +146,7 @@ const CSS = `
   .article-table tr:nth-child(even) td { background: #f9f7f4; }
   .article-content table { width: 100% !important; border-collapse: collapse; margin: 20px 0; font-family: 'Noto Sans Thai', sans-serif; font-size: 13px; }
   .article-content table th { background: #0c244a; color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; word-break: break-word; overflow-wrap: anywhere; }
-  .article-content table td { padding: 10px 14px; border-bottom: 1px solid #eaeaea; color: #1a2e44; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; }
+  .article-content table td { padding: 10px 14px; border-bottom: 1px solid #eaeaea; color: #1a2e44; vertical-align: top; word-break: break-word; overflow-wrap: anywhere; text-align: center; }
   .article-content table tr:nth-child(even) td { background: #f9f7f4; }
   /* body HTML wraps each table in a HubSpot box capped at 520px tall (inline style) and borders it #99acc2 */
   .article-content [data-hs-responsive-table] { max-height: none !important; overflow-y: visible !important; }
