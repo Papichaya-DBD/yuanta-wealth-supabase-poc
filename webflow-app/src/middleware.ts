@@ -20,13 +20,18 @@ const ASSET_ORIGINS = [
 const SUPABASE = "https://kqgdvpqygepvaifzrxki.supabase.co";
 
 // Beacons and pixels from the tags in GTM-TB9V4FG5 (GA4, Google Ads, Meta, TikTok,
-// LINE, X, Clarity). A new GTM vendor that sends data to another host needs it here.
+// LINE, X, Clarity), taken from what production actually requested on 2026-11-11.
+// A new GTM vendor that sends data to another host needs it here.
 const TRACKING = [
   "https://www.googletagmanager.com",
   "https://*.google-analytics.com",
   "https://*.analytics.google.com",
   "https://*.doubleclick.net",
   "https://www.googleadservices.com",
+  "https://pagead2.googlesyndication.com",
+  "https://mpc-pilot-1-s6uit34pua-uc.a.run.app",
+  "https://mpc-pilot-2-s6uit34pua-ue.a.run.app",
+  "https://analytics-ipv6.tiktokw.us",
   "https://www.google.com",
   "https://www.google.co.th",
   "https://*.clarity.ms",
