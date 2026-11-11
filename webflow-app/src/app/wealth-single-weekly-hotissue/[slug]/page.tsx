@@ -204,6 +204,15 @@ function closeWeeklyModalDirect() {
 }
 
 const CSS = `
+  /* Article tables: template_main.min.css sets nowrap on .tbl-scroll-inner cells, so long
+     text stretched tables past the column. Same fix as monthly asset-performance: cells wrap,
+     tables fit the column on desktop and scroll sideways at 960px on smaller screens. */
+  .article-content .tbl-scroll-inner table th, .article-content .tbl-scroll-inner table td { white-space: normal; }
+  .article-content .tbl-scroll-inner table { min-width: 960px; }
+  @media (min-width: 992px) {
+    .article-content .tbl-scroll-inner { overflow-x: visible; }
+    .article-content .tbl-scroll-inner table { min-width: 0; width: 100% !important; }
+  }
   .insight-page { margin-top: 90px; background: #fff; }
   .insight-breadcrumb { padding: 30px 0; background: #fff; }
   .insight-breadcrumb ol { margin: 0; padding: 0; list-style: none; display: flex; align-items: center; gap: 6px; font-family: 'Noto Sans Thai', sans-serif; font-size: 13px; color: #8f9aac; }
