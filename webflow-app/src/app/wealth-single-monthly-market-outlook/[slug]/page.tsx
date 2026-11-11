@@ -180,7 +180,8 @@ const CSS = `
   .related-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
   .related-title { font-family: 'Noto Sans Thai', sans-serif; font-size: 18px; font-weight: 700; color: #0c244a; margin: 0; }
   .related-week-header { display: none; align-items: center; gap: 10px; margin-bottom: 16px; }
-  .related-week-chip { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; background: #3D506E; color: #fff; padding: 3px 10px; } .related-week-chip-monthly { background: #0C244A; }
+  .related-week-header-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,.08); }
+  .related-week-chip { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; background: #3D506E; color: #fff; padding: 3px 10px; flex-shrink: 0; } .related-week-chip-monthly { background: #0C244A; }
   .related-week-label { font-family: 'Noto Sans Thai', sans-serif; font-size: 20px; font-weight: 700; color: #0c244a; }
   @media (max-width: 767px) { .related-week-header { display: flex; } .related-grid { display: none !important; } }
   .insight-card { background: #fff; display: flex; flex-direction: column; height: 100%; cursor: pointer; transition: box-shadow .2s, transform .18s; box-shadow: 0 0 1px rgba(102,102,102,.14), 0 2px 6px rgba(102,102,102,.08); }
