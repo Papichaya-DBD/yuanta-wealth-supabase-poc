@@ -9,3 +9,14 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+
+/* Article tables on every analysis page: one border colour for the outer border and the
+   row/cell lines. The article HTML from Supabase carries inline border colours left over
+   from HubSpot (#99acc2 etc.), so this needs !important. Only the colour changes; which
+   borders are drawn, and their width, stays as each page/table defines it. */
+.article-content table,
+.article-content table tr,
+.article-content table th,
+.article-content table td {
+  border-color: #e2e0de !important;
+}

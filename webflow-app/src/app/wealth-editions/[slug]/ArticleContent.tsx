@@ -150,7 +150,7 @@ const CSS = `
   .article-content table tr:nth-child(even) td { background: #f9f7f4; }
   /* body HTML wraps each table in a HubSpot box capped at 520px tall (inline style) and borders it #99acc2 */
   .article-content [data-hs-responsive-table] { max-height: none !important; overflow-y: visible !important; }
-  .article-content table { border: 1px solid #eaeaea !important; }
+  .article-content table { border: 1px solid #e2e0de !important; }
   .article-cta-row { margin-bottom: 32px; }
   .article-cta-left { border: 1.5px solid #0000001A; background: url('/images/theme/bgoverall.jpg') center/cover no-repeat; padding: 44px 40px; }
   .article-cta-title { font-family: 'Noto Sans Thai', sans-serif; font-size: 32px; font-weight: 700; color: #0c244a; margin-bottom: 10px; line-height: 1.3; }
