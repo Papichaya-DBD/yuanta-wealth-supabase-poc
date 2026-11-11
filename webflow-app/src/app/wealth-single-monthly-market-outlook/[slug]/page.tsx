@@ -72,7 +72,7 @@ const THUMB = {
 function insightCardHtml(row: any, cls: string, label: string, thumb: string, url: string, excerpt: string) {
   return (
     '<div class="swiper-slide">' +
-    `<div class="insight-card" onclick="location.href='${url}'">` +
+    `<div class="insight-card" data-href="${url}">` +
     '<div class="insight-card-img-wrap">' +
     `<img class="insight-card-img" src="${thumb}" alt="${row.main_title || ""}" />` +
     "</div>" +

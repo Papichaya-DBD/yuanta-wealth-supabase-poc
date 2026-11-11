@@ -136,9 +136,9 @@ function mobileCardHtml(a: Article) {
   const t = a._table,
     url = articleUrl(a);
   return (
-    `<div class="home-insight-card" onclick="location.href='${url}'">` +
+    `<div class="home-insight-card" data-href="${url}">` +
     '<div class="home-insight-card-img-wrap">' +
-    `<img class="home-insight-card-img" src="${imgUrl(a)}" alt="" onerror="this.onerror=null;this.src='${HOME_FALLBACK_IMG}'" />` +
+    `<img class="home-insight-card-img" src="${imgUrl(a)}" alt="" data-fallback="${HOME_FALLBACK_IMG}" />` +
     `<span class="home-insight-card-img-tag insight-tag ${t.cls}">${t.label}</span>` +
     "</div><div class=\"home-insight-card-content\">" +
     `<p class="home-insight-card-date">${thaiDate(a.values.page_date)}</p>` +
@@ -160,14 +160,14 @@ function buildHomeWeekHtml(articles: Article[], isMonthly: boolean): string {
       const t = a._table,
         url = articleUrl(a);
       return (
-        `<div class="home-article-list-item" onclick="location.href='${url}'">` +
+        `<div class="home-article-list-item" data-href="${url}">` +
         '<div class="home-article-list-text">' +
         `<span class="insight-tag ${t.cls}">${t.label}</span>` +
         `<h4 class="home-article-list-title">${a.values.main_title || ""}</h4>` +
         `<p class="home-article-list-date">${thaiDate(a.values.page_date)}</p>` +
         "</div>" +
         '<div class="home-article-list-thumb-wrap">' +
-        `<img src="${imgUrl(a)}" alt="" onerror="this.onerror=null;this.src='${HOME_FALLBACK_IMG}'" />` +
+        `<img src="${imgUrl(a)}" alt="" data-fallback="${HOME_FALLBACK_IMG}" />` +
         "</div></div>"
       );
     })
@@ -187,16 +187,16 @@ function buildHomeWeekHtml(articles: Article[], isMonthly: boolean): string {
   return (
     headerHtml +
     '<div class="home-week-featured-layout home-d-lg-grid">' +
-    `<div class="home-featured-card" onclick="location.href='${featUrl}'">` +
+    `<div class="home-featured-card" data-href="${featUrl}">` +
     '<div class="home-featured-card-img-wrap">' +
-    `<img src="${imgUrl(feat)}" alt="" onerror="this.onerror=null;this.src='${HOME_FALLBACK_IMG}'" />` +
+    `<img src="${imgUrl(feat)}" alt="" data-fallback="${HOME_FALLBACK_IMG}" />` +
     `<span class="home-featured-card-tag insight-tag ${ft.cls}">${ft.label}</span>` +
     "</div>" +
     '<div class="home-featured-card-content">' +
     `<p class="home-featured-card-date">${thaiDate(feat.values.page_date)}</p>` +
     `<h2 class="home-featured-card-title">${feat.values.main_title || ""}</h2>` +
     `<p class="home-featured-card-excerpt">${feat.values.description || ""}</p>` +
-    `<a href="${featUrl}" class="home-read-more" onclick="event.stopPropagation()">อ่านเพิ่มเติม ${SVG_ARROW}</a>` +
+    `<a href="${featUrl}" class="home-read-more">อ่านเพิ่มเติม ${SVG_ARROW}</a>` +
     "</div></div>" +
     `<div class="home-article-list">${listHtml}</div>` +
     "</div>" +
@@ -222,7 +222,7 @@ function eventCardHtml(ev: Record<string, any>) {
     : "";
   return (
     '<div class="swiper-slide">' +
-    `<div class="event-card" style="cursor:pointer;" onclick="location.href='/wealth-single-events?slug=${encodeURIComponent(ev.slug || "")}'">` +
+    `<div class="event-card" style="cursor:pointer;" data-href="/wealth-single-events?slug=${encodeURIComponent(ev.slug || "")}">` +
     `<img class="event-img" src="${img}" alt="${ev.title || ""}" />` +
     '<div class="event-card-content">' +
     `<h3 class="event-title">${ev.title || ""}</h3>` +

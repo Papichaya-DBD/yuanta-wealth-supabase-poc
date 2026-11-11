@@ -103,7 +103,7 @@ function fundTagsHtml(fundsStr?: string) {
       typesPresent[f.type] = true;
       const cls = f.type === "dr" ? " dr" : f.type === "etf" ? " etf" : "";
       return (
-        `<button class="ftag${cls}" onclick="window.__openFundDrawer('${f.ticker}', '${f.type}')">` +
+        `<button class="ftag${cls}" data-fund-ticker="${f.ticker}" data-fund-type="${f.type}">` +
         f.ticker +
         ' <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4l4 4-4 4"/></svg></button>'
       );
@@ -220,7 +220,7 @@ function relatedCardHtml(a: { values: Record<string, any>; _table: WTable }) {
   const url = t.path + (a.values.week_slug || "");
   return (
     '<div class="swiper-slide">' +
-    `<div class="insight-card" onclick="location.href='${url}'">` +
+    `<div class="insight-card" data-href="${url}">` +
     `<div class="insight-card-img-wrap"><img class="insight-card-img" src="${src}" alt="" /></div>` +
     '<div class="insight-card-content">' +
     `<span class="insight-card-img-tag insight-tag ${t.cls}">${t.label}</span>` +
@@ -236,7 +236,7 @@ function weekModalCardHtml(a: { values: Record<string, any>; _table: WTable }) {
   const url = t.path + (a.values.week_slug || "");
   return (
     '<div class="col-6 col-lg-3">' +
-    `<div class="insight-card" onclick="location.href='${url}'">` +
+    `<div class="insight-card" data-href="${url}">` +
     `<div class="insight-card-img-wrap"><img class="insight-card-img" src="${src}" alt="" /></div>` +
     '<div class="insight-card-content">' +
     `<span class="insight-card-img-tag insight-tag ${t.cls}">${t.label}</span>` +
@@ -253,7 +253,7 @@ function monthlyCardHtml(t: WTable, row: Record<string, any>) {
   const excerpt = row.description || (t.aiFallback ? stripHtml(row.ai_summary) : "");
   return (
     '<div class="col-6 col-lg-3">' +
-    `<div class="insight-card" onclick="location.href='${url}'">` +
+    `<div class="insight-card" data-href="${url}">` +
     `<div class="insight-card-img-wrap"><img class="insight-card-img" src="${src}" alt="" /></div>` +
     '<div class="insight-card-content">' +
     `<span class="insight-card-img-tag insight-tag ${t.cls}">${t.label}</span>` +
@@ -699,9 +699,9 @@ export default function SingleBuyListPage() {
       const nav = document.createElement("div");
       nav.className = "tbl-scroll-nav";
       nav.innerHTML =
-        '<button class="tbl-scroll-btn" onclick="this.parentNode.previousElementSibling.scrollBy({left:-140,behavior:\'smooth\'})">&#8249;</button>' +
+        '<button class="tbl-scroll-btn" data-scroll-by="-140">&#8249;</button>' +
         "<span>เลื่อนดูเพิ่มเติม</span>" +
-        '<button class="tbl-scroll-btn" onclick="this.parentNode.previousElementSibling.scrollBy({left:140,behavior:\'smooth\'})">&#8250;</button>';
+        '<button class="tbl-scroll-btn" data-scroll-by="140">&#8250;</button>';
       wrap.appendChild(nav);
       const checkNav = () => { nav.style.display = inner.scrollWidth > inner.clientWidth ? "flex" : "none"; };
       requestAnimationFrame(checkNav);

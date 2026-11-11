@@ -68,7 +68,7 @@ function relatedCardHtml(t: RelatedTable, row: Record<string, any>) {
   const excerpt = row.description || stripHtml(row.ai_summary);
   return (
     '<div class="swiper-slide">' +
-    `<div class="insight-card" onclick="location.href='${url}'">` +
+    `<div class="insight-card" data-href="${url}">` +
     `<div class="insight-card-img-wrap"><img class="insight-card-img" src="${src}" alt="" /></div>` +
     '<div class="insight-card-content">' +
     `<span class="insight-card-img-tag insight-tag ${t.cls}">${t.label}</span>` +
@@ -436,9 +436,9 @@ export default function SingleMonthlyAssetClassOutlookPage() {
             const url = t.path + slugPart;
             const excerpt = a.description || stripHtml(a.ai_summary);
             return (
-              '<div class="col-6 col-lg-3"><div class="insight-card" onclick="location.href=\'' +
+              '<div class="col-6 col-lg-3"><div class="insight-card" data-href="' +
               url +
-              '\'">' +
+              '">' +
               `<div class="insight-card-img-wrap"><img class="insight-card-img" src="${src}" alt="" /></div>` +
               '<div class="insight-card-content">' +
               `<span class="insight-card-img-tag insight-tag ${t.cls}">${t.label}</span>` +

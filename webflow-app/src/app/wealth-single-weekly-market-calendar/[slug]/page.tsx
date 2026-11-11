@@ -118,7 +118,7 @@ function cardHtml(a: { values: Record<string, any>; _table: WTable }) {
   const url = t.path + (a.values.week_slug || "");
   return (
     '<div class="swiper-slide">' +
-    `<div class="insight-card" onclick="location.href='${url}'">` +
+    `<div class="insight-card" data-href="${url}">` +
     `<div class="insight-card-img-wrap"><img class="insight-card-img" src="${src}" alt="" /></div>` +
     '<div class="insight-card-content">' +
     `<span class="insight-card-img-tag insight-tag ${t.cls}">${t.label}</span>` +
@@ -134,7 +134,7 @@ function weekModalCardHtml(a: { values: Record<string, any>; _table: WTable }) {
   const url = t.path + (a.values.week_slug || "");
   return (
     '<div class="col-6 col-lg-3">' +
-    `<div class="insight-card" onclick="location.href='${url}'">` +
+    `<div class="insight-card" data-href="${url}">` +
     `<div class="insight-card-img-wrap"><img class="insight-card-img" src="${src}" alt="" /></div>` +
     '<div class="insight-card-content">' +
     `<span class="insight-card-img-tag insight-tag ${t.cls}">${t.label}</span>` +
@@ -150,7 +150,7 @@ function monthlyCardHtml(a: { values: Record<string, any>; _table: WTable }) {
   const url = t.path + (t.useId ? a.values.path || "" : (a.values.week_slug || "").trim());
   return (
     '<div class="col-6 col-lg-3">' +
-    `<div class="insight-card" onclick="location.href='${url}'">` +
+    `<div class="insight-card" data-href="${url}">` +
     `<div class="insight-card-img-wrap"><img class="insight-card-img" src="${src}" alt="" /></div>` +
     '<div class="insight-card-content">' +
     `<span class="insight-card-img-tag insight-tag ${t.cls}">${t.label}</span>` +

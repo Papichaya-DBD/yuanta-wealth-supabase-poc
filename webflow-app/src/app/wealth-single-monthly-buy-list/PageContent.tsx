@@ -69,7 +69,7 @@ function relatedCardHtml(t: RelatedTable, row: Record<string, any>) {
   const excerpt = row.description || (t.aiFallback ? stripHtml(row.ai_summary) : "");
   return (
     '<div class="swiper-slide">' +
-    `<div class="insight-card" onclick="location.href='${url}'">` +
+    `<div class="insight-card" data-href="${url}">` +
     `<div class="insight-card-img-wrap"><img class="insight-card-img" src="${src}" alt="" /></div>` +
     '<div class="insight-card-content">' +
     `<span class="insight-card-img-tag insight-tag ${t.cls}">${t.label}</span>` +
@@ -100,7 +100,7 @@ function fundTagsHtml(fundsStr?: string) {
       typesPresent[f.type] = true;
       const cls = f.type === "dr" ? " dr" : f.type === "etf" ? " etf" : "";
       return (
-        `<button class="ftag${cls}" onclick="window.__openFundDrawer && window.__openFundDrawer('${f.ticker}', '${f.type}')">` +
+        `<button class="ftag${cls}" data-fund-ticker="${f.ticker}" data-fund-type="${f.type}">` +
         f.ticker +
         ' <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4l4 4-4 4"/></svg></button>'
       );

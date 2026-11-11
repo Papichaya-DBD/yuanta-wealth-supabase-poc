@@ -80,9 +80,9 @@ function wrapTableScroll(root: HTMLElement | null) {
     const nav = document.createElement("div");
     nav.className = "tbl-scroll-nav";
     nav.innerHTML =
-      '<button class="tbl-scroll-btn" onclick="this.parentNode.previousElementSibling.scrollBy({left:-140,behavior:\'smooth\'})">&#8249;</button>' +
+      '<button class="tbl-scroll-btn" data-scroll-by="-140">&#8249;</button>' +
       "<span>เลื่อนดูเพิ่มเติม</span>" +
-      '<button class="tbl-scroll-btn" onclick="this.parentNode.previousElementSibling.scrollBy({left:140,behavior:\'smooth\'})">&#8250;</button>';
+      '<button class="tbl-scroll-btn" data-scroll-by="140">&#8250;</button>';
     wrap.appendChild(nav);
     const checkNav = () => { nav.style.display = inner.scrollWidth > inner.clientWidth ? "flex" : "none"; };
     requestAnimationFrame(checkNav);
@@ -121,7 +121,7 @@ function relatedCardHtml(t: RelatedTable, row: any) {
   const excerpt = row.description || stripHtml(row.ai_summary);
   return (
     '<div class="swiper-slide">' +
-    `<div class="insight-card" onclick="location.href='${url}'">` +
+    `<div class="insight-card" data-href="${url}">` +
     `<div class="insight-card-img-wrap"><img class="insight-card-img" src="${src}" alt="" /></div>` +
     '<div class="insight-card-content">' +
     `<span class="insight-card-img-tag insight-tag ${t.cls}">${t.label}</span>` +
@@ -167,7 +167,7 @@ function openWeekModal(currentWeek: string) {
         const t = a._table, src = WEEKLY_THUMB[t.id] || FALLBACK_IMG;
         const url = t.path + (a.week_slug || "");
         return (
-          '<div class="col-6 col-lg-3"><div class="insight-card" onclick="location.href=\'' + url + "'\">" +
+          '<div class="col-6 col-lg-3"><div class="insight-card" data-href="' + url + '">' +
           `<div class="insight-card-img-wrap"><img class="insight-card-img" src="${src}" alt="" /></div>` +
           '<div class="insight-card-content">' +
           `<span class="insight-card-img-tag insight-tag ${t.cls}">${t.label}</span>` +
