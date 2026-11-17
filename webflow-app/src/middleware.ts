@@ -67,7 +67,56 @@ function buildCsp(nonce: string) {
   ].join("; ");
 }
 
+// CPU cost (Webflow Cloud bills CPU time over 30 min/month): the first request an
+// idle worker gets loads the whole Next.js server (~110-150 ms CPU), and with our
+// traffic most requests are such cold starts. A Response returned from here skips
+// loading the Next server entirely (OpenNext imports it only when middleware lets
+// the request through), so requests that need no page are answered here.
+const SITE_HOST = "wealth.yuanta.co.th";
+
+// Same headers next.config.ts sets on Next's responses; they aren't applied to
+// responses created in middleware.
+const SECURITY_HEADERS: Record<string, string> = {
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+  "X-Frame-Options": "SAMEORIGIN",
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+  "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'self'",
+};
+
+// Every page route is "/" or starts with "/wealth-" (legacy short paths like
+// /why-us are 301'd by next.config.ts redirects, which run before middleware).
+function isSitePath(path: string) {
+  return path === "/" || path.startsWith("/wealth-") || path.startsWith("/_next/") || path === "/icon.png";
+}
+
+// Crawlable only on the real domain; any other host (e.g. the *.webflow.io staging
+// URL) tells crawlers to stay out so staging never gets indexed.
+function robotsTxt(host: string) {
+  return host === SITE_HOST
+    ? `User-Agent: *\nAllow: /\n\nSitemap: https://${SITE_HOST}/sitemap.xml\n`
+    : "User-Agent: *\nDisallow: /\n";
+}
+
+const NOT_FOUND_HTML = `<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>ไม่พบหน้านี้ | Yuanta Wealth Management</title></head><body style="font-family:sans-serif;text-align:center;padding:80px 16px;color:#333"><h1 style="font-size:24px">ไม่พบหน้าที่คุณต้องการ</h1><p><a href="/" style="color:#ff6600">กลับหน้าแรก</a></p></body></html>`;
+
 export function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+  if (path === "/robots.txt") {
+    return new NextResponse(robotsTxt(request.headers.get("host") || ""), {
+      headers: { ...SECURITY_HEADERS, "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
+  // Bot probes (/wp-login.php, /.env, /favicon.ico, ...) would otherwise boot Next
+  // just to render its 404.
+  if (!isSitePath(path)) {
+    return new NextResponse(NOT_FOUND_HTML, {
+      status: 404,
+      headers: { ...SECURITY_HEADERS, "Content-Type": "text/html; charset=utf-8" },
+    });
+  }
+
   const nonce = btoa(crypto.randomUUID());
   const csp = buildCsp(nonce);
 
@@ -83,8 +132,9 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     {
-      // Pages only: static files and Next's own assets don't need a CSP.
-      source: "/((?!_next/static|_next/image|vendor/|fonts/|images/|favicon.ico|robots.txt|sitemap.xml).*)",
+      // Pages only (static files and Next's own assets don't need a CSP), plus
+      // robots.txt and unknown paths, which are answered above.
+      source: "/((?!_next/static|_next/image|vendor/|fonts/|images/|sitemap.xml).*)",
       missing: [
         { type: "header", key: "next-router-prefetch" },
         { type: "header", key: "purpose", value: "prefetch" },
