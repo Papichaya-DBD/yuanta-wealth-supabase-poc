@@ -1,6 +1,8 @@
 // sitemap.xml built from Supabase on each request, covering the same kinds of URLs
-// as production's HubSpot sitemap: site pages, every article, and weekly report
-// pages (production lists those by date). Preview pages are left out on purpose.
+// as production's HubSpot sitemap: site pages and every article.
+// Preview pages are left out on purpose, and so are the weekly/monthly report
+// pages: they only redirect to the PDF, and crawlers following them pulled every
+// report from Supabase Storage (~85% of its egress, 2026-11-23).
 import type { MetadataRoute } from "next";
 import { sbServerRows, SITE_URL } from "./_components/seo";
 
@@ -19,7 +21,6 @@ const ARTICLES: [route: string, table: string, key: "path" | "week_slug"][] = [
   ["/wealth-single-monthly-buy-list", "monthly_buy_list", "week_slug"],
   ["/wealth-single-monthly-market-calendar", "monthly_market_calendar", "week_slug"],
   ["/wealth-single-monthly-market-outlook", "monthly_market_outlook", "week_slug"],
-  ["/wealth-weekly-report", "weekly_pdf", "week_slug"],
   ["/wealth-editions", "special_insight", "path"],
 ];
 

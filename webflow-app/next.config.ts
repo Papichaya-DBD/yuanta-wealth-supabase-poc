@@ -80,6 +80,14 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()" },
         ],
       },
+      // Report pages only redirect to the PDF in Supabase Storage; keep crawlers off
+      // them (egress). Same rule as robots.txt and the pages' robots meta.
+      ...["/wealth-weekly-report", "/wealth-monthly-report"].flatMap((p) =>
+        [p, `${p}/:slug`].map((source) => ({
+          source,
+          headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+        }))
+      ),
     ];
   },
   async redirects() {

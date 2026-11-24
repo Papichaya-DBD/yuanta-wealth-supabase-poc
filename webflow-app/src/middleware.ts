@@ -93,11 +93,24 @@ function isSitePath(path: string) {
 
 // Crawlable only on the real domain; any other host (e.g. the *.webflow.io staging
 // URL) tells crawlers to stay out so staging never gets indexed.
+// The report pages are disallowed even on the real domain: they only redirect to the
+// PDF in Supabase Storage, and crawlers following them were ~85% of its egress
+// (2026-11-23, 9-27 MB per report).
 function robotsTxt(host: string) {
   return host === SITE_HOST
-    ? `User-Agent: *\nAllow: /\n\nSitemap: https://${SITE_HOST}/sitemap.xml\n`
+    ? `User-Agent: *\nDisallow: /wealth-weekly-report\nDisallow: /wealth-monthly-report\nAllow: /\n\nSitemap: https://${SITE_HOST}/sitemap.xml\n`
     : "User-Agent: *\nDisallow: /\n";
 }
+
+// Report pages redirect to the PDF client-side, so any crawler that runs JS downloads
+// the whole file. Self-declared bots get a small static page instead, answered here
+// so it doesn't boot the Next server either. Crawlers posing as a browser still get
+// through; robots.txt and noindex are the other layers.
+const REPORT_PATH = /^\/wealth-(weekly|monthly)-report(\/|$)/;
+const BOT_UA =
+  /bot\b|bot\/|crawl|spider|slurp|facebookexternalhit|meta-externalagent|headless|python|curl|wget|scrapy|httpclient|okhttp|go-http|java\/|axios|node-fetch/i;
+
+const REPORT_BOT_HTML = `<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><title>Yuanta Wealth Report</title></head><body style="font-family:sans-serif;text-align:center;padding:80px 16px;color:#333"><p>เปิดรายงานได้จากหน้าบทความบน <a href="/wealth-insights">wealth.yuanta.co.th</a></p></body></html>`;
 
 const NOT_FOUND_HTML = `<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>ไม่พบหน้านี้ | Yuanta Wealth Management</title></head><body style="font-family:sans-serif;text-align:center;padding:80px 16px;color:#333"><h1 style="font-size:24px">ไม่พบหน้าที่คุณต้องการ</h1><p><a href="/" style="color:#ff6600">กลับหน้าแรก</a></p></body></html>`;
 
@@ -114,6 +127,15 @@ export function middleware(request: NextRequest) {
     return new NextResponse(NOT_FOUND_HTML, {
       status: 404,
       headers: { ...SECURITY_HEADERS, "Content-Type": "text/html; charset=utf-8" },
+    });
+  }
+  if (REPORT_PATH.test(path) && BOT_UA.test(request.headers.get("user-agent") || "")) {
+    return new NextResponse(REPORT_BOT_HTML, {
+      headers: {
+        ...SECURITY_HEADERS,
+        "Content-Type": "text/html; charset=utf-8",
+        "X-Robots-Tag": "noindex, nofollow",
+      },
     });
   }
 
